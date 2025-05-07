@@ -1,0 +1,252 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 196 94% 48%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 196 94% 48%;
+    --radius: 0.5rem;
+
+    /* Custom colors */
+    --primary-dark: 200 100% 35%;
+    --beach-light: 199 94% 64%;
+    --beach: 199 94% 48%;
+    --beach-dark: 201 100% 41%;
+    --mountain-light: 142 47% 65%;
+    --mountain: 142 47% 49%;
+    --mountain-dark: 142 47% 35%;
+    --city-light: 262 59% 63%;
+    --city: 262 59% 47%;
+    --city-dark: 262 59% 35%;
+    --island-light: 45 100% 65%;
+    --island: 45 100% 50%;
+    --island-dark: 36 100% 50%;
+    --countryside-light: 25 33% 56%;
+    --countryside: 25 33% 38%;
+    --countryside-dark: 25 33% 28%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 196 94% 48%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 196 94% 48%;
+
+    /* Custom colors in dark mode */
+    --primary-dark: 200 100% 30%;
+    --beach-light: 199 94% 55%;
+    --beach: 199 94% 45%;
+    --beach-dark: 201 100% 35%;
+    --mountain-light: 142 47% 55%;
+    --mountain: 142 47% 45%;
+    --mountain-dark: 142 47% 30%;
+    --city-light: 262 59% 55%;
+    --city: 262 59% 45%;
+    --city-dark: 262 59% 30%;
+    --island-light: 45 100% 55%;
+    --island: 45 100% 45%;
+    --island-dark: 36 100% 40%;
+    --countryside-light: 25 33% 50%;
+    --countryside: 25 33% 35%;
+    --countryside-dark: 25 33% 25%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Gradient backgrounds for categories */
+.bg-beach-gradient {
+  background: linear-gradient(135deg, hsl(var(--beach-light)) 0%, hsl(var(--beach)) 50%, hsl(var(--beach-dark)) 100%);
+}
+
+.bg-mountain-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--mountain-light)) 0%,
+    hsl(var(--mountain)) 50%,
+    hsl(var(--mountain-dark)) 100%
+  );
+}
+
+.bg-city-gradient {
+  background: linear-gradient(135deg, hsl(var(--city-light)) 0%, hsl(var(--city)) 50%, hsl(var(--city-dark)) 100%);
+}
+
+.bg-island-gradient {
+  background: linear-gradient(135deg, hsl(var(--island-light)) 0%, hsl(var(--island)) 50%, hsl(var(--island-dark)) 100%);
+}
+
+.bg-countryside-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--countryside-light)) 0%,
+    hsl(var(--countryside)) 50%,
+    hsl(var(--countryside-dark)) 100%
+  );
+}
+
+/* Gradient backgrounds for general use */
+.bg-primary-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+}
+
+.bg-sunset-gradient {
+  background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+}
+
+.bg-ocean-gradient {
+  background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+}
+
+.bg-forest-gradient {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+}
+
+.bg-purple-gradient {
+  background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+}
+
+.bg-sunset-dark-gradient {
+  background: linear-gradient(135deg, #f85032 0%, #e73827 100%);
+}
+
+/* Animation for hover effects */
+.hover-scale {
+  transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.03);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Custom animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Category badges */
+.category-badge {
+  @apply px-3 py-1 rounded-full text-white font-medium text-sm;
+}
+
+.category-badge-beach {
+  background-color: hsl(var(--beach));
+}
+
+.category-badge-mountain {
+  background-color: hsl(var(--mountain));
+}
+
+.category-badge-city {
+  background-color: hsl(var(--city));
+}
+
+.category-badge-island {
+  background-color: hsl(var(--island));
+}
+
+.category-badge-countryside {
+  background-color: hsl(var(--countryside));
+}
+
+/* Gradient text */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.text-primary-gradient {
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary-dark)));
+}
+
+.text-beach-gradient {
+  background-image: linear-gradient(to right, hsl(var(--beach)), hsl(var(--beach-dark)));
+}
+
+.text-mountain-gradient {
+  background-image: linear-gradient(to right, hsl(var(--mountain)), hsl(var(--mountain-dark)));
+}
+
+.text-city-gradient {
+  background-image: linear-gradient(to right, hsl(var(--city)), hsl(var(--city-dark)));
+}
+
+.text-island-gradient {
+  background-image: linear-gradient(to right, hsl(var(--island)), hsl(var(--island-dark)));
+}
+
+.text-countryside-gradient {
+  background-image: linear-gradient(to right, hsl(var(--countryside)), hsl(var(--countryside-dark)));
+}
+
