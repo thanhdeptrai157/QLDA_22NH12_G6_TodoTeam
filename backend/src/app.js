@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
 const PORT = 3000;
-const userRoutes = require('./routes/userRoutes');
 
-// Middleware
+const authRoutes = require('./routes/auth.routes');
+const postRoutes = require('./routes/post.routes');
+
 app.use(express.json());
 
-app.use('/', userRoutes);
+// Routes
+app.use('/auth', authRoutes);
+app.use('/posts', postRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
