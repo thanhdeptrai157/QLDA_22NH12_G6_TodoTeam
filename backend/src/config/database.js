@@ -9,6 +9,7 @@ const sequelize = new Sequelize(process.env.PGDATABASE, process.env.PGUSER, proc
             rejectUnauthorized: false, // Tùy chọn này bỏ qua việc xác thực chứng chỉ (nếu cần)
         },
     },
+        logging: false, 
 });
 
 sequelize
