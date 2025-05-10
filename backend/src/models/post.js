@@ -9,6 +9,7 @@ const Post = sequelize.define('post', {
     title: { type: Sequelize.STRING, allowNull: false },
     content: { type: Sequelize.TEXT, allowNull: false },
     likes: { type: Sequelize.INTEGER, defaultValue: 0 },
+    image: { type: Sequelize.STRING }, 
     createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
     status: { type: Sequelize.BOOLEAN, defaultValue: true }

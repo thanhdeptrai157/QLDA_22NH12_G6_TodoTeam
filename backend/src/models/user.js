@@ -7,7 +7,7 @@ const User = sequelize.define('user', {
     email: { type: Sequelize.STRING, allowNull: false, unique: true },
     password: { type: Sequelize.STRING, allowNull: false },
     phone: { type: Sequelize.STRING },
-    role: { type: Sequelize.ENUM('user', 'admin') },
+    role: { type: Sequelize.ENUM('user', 'admin') , defaultValue: 'user' },
     avatarPath: {
         type: Sequelize.STRING,
         field: 'avatarpath',
