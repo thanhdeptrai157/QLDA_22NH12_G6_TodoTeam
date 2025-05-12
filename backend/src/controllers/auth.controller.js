@@ -56,8 +56,9 @@ const register = async (req, res) => {
     });
 
     // Tạo token JWT
-    const accessToken = jwt.sign({ id: user.id, email: user.email }, 'your_secret_key', { expiresIn: '1h' });
-    const refreshToken = jwt.sign({ id: user.id, email: user.email }, 'your_refresh_secret_key', { expiresIn: '7d' });
+    const accessToken = jwt.sign({ id: newUser.id, email: newUser.email }, 'your_secret_key', { expiresIn: '1h' });
+    const refreshToken = jwt.sign({ id: newUser.id, email: newUser.email }, 'your_refresh_secret_key', { expiresIn: '7d' });
+
     res.status(201).send({
       message: 'User registered successfully',
       accessToken,
