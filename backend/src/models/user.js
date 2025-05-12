@@ -11,7 +11,13 @@ const User = sequelize.define('user', {
     avatarPath: {
         type: Sequelize.STRING,
         field: 'avatarpath',
-    }
+    },
+    coverPath: {
+        type: Sequelize.STRING,
+        field: 'coverpath',
+    },
+    bio: { type: Sequelize.STRING },
+    address: { type: Sequelize.STRING },
 }, {
     tableName: 'user',
     timestamps: false
