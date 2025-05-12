@@ -1,15 +1,23 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
+import { useAuth } from "@/hooks/useAuth"
+import Cookies from "js-cookie"
+import { ACCESS_TOKEN_KEY } from "@/types/status"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -19,6 +27,15 @@ export default function LoginPage() {
     email: "",
     password: "",
   })
+  const { handleLogin } = useAuth()
+
+  // ✅ Kiểm tra nếu đã có access token -> redirect
+  useEffect(() => {
+    const accessToken = Cookies.get(ACCESS_TOKEN_KEY)
+    if (accessToken) {
+      router.replace("/") // chuyển hướng đến trang chính
+    }
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -30,15 +47,11 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Mock successful login
+      const response = await handleLogin(formData.email, formData.password)
       toast({
         title: "Đăng nhập thành công",
         description: "Chào mừng bạn quay trở lại!",
       })
-
       router.push("/")
     } catch (error) {
       toast({
@@ -56,7 +69,9 @@ export default function LoginPage() {
       <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Đăng nhập</CardTitle>
-          <CardDescription className="text-center">Nhập thông tin đăng nhập của bạn để tiếp tục</CardDescription>
+          <CardDescription className="text-center">
+            Nhập thông tin đăng nhập của bạn để tiếp tục
+          </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -75,7 +90,10 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
-                <Link href="/auth/forgot-password" className="text-sm text-primary hover:underline">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
                   Quên mật khẩu?
                 </Link>
               </div>
@@ -105,4 +123,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

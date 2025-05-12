@@ -18,7 +18,15 @@ const login = async (req, res) => {
 
     const accessToken = jwt.sign({ id: user.id, email: user.email }, 'your_secret_key', { expiresIn: '1h' });
     const refreshToken = jwt.sign({ id: user.id, email: user.email }, 'your_refresh_secret_key', { expiresIn: '7d' });
-    res.send({ message: 'Login successful', accessToken, refreshToken });
+    const safeUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      avatarPath: user.avatarPath,
+      role: user.role,
+    };
+    res.send({ message: 'Login successful', accessToken, refreshToken, user: safeUser });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Internal server error' });

@@ -15,23 +15,19 @@ import { useState } from "react"
 import { Menu, User, LogOut, Settings, MapPin, Search, Bell } from "lucide-react"
 import { ThemeToggle } from "./theme-toggle"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useAuthStore } from "@/store/user"
+import { authService } from "@/service/auth-service"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [user, setUser] = useState({
-    name: "Nguyễn Văn A",
-    email: "nguyenvana@example.com",
-    avatarPath: "/placeholder.svg?height=32&width=32",
-  })
-
+  const {user } = useAuthStore()
+  const isLoggedIn = !!user
+  const { handleLogout }= useAuth()
   // Mock function to simulate logout
-  const handleLogout = () => {
-    setIsLoggedIn(false)
-  }
 
   // Mock function to simulate login (for demo purposes)
   const handleLogin = () => {
-    setIsLoggedIn(true)
+    
   }
 
   return (
