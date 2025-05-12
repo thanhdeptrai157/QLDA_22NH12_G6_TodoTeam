@@ -11,4 +11,6 @@ router.post('/', postController.createPost);
 // Route to get a post by ID
 router.get('/:id', postController.getPostById);
 
+router.get('/get_by_place_id/:place_id', postController.getPostByIdPlace);
+
 module.exports = router;
