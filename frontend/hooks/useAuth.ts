@@ -55,17 +55,17 @@ export function useAuth() {
 
     // Đăng ký
     const handleRegister = async (
-        username: string,
+        name: string,
         email: string,
         password: string,
-        confirmPassword: string
+        phone: string
     ) => {
         setIsLoading(true);
         setMessage("");
         setError("");
 
         try {
-            await authService.register(username, email, password, confirmPassword);
+            await authService.register(name, email, password, phone);
 
             setMessage("Đăng ký thành công! Vui lòng kiểm tra email.");
             return true;
