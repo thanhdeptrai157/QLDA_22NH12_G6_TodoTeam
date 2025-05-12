@@ -60,8 +60,37 @@ const register = async (req, res) => {
     res.status(500).send({ message: 'Internal server error' });
   }
 };
+// API Refresh Token
+const refreshAccessToken = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(400).send({ message: 'Refresh token is required' });
+  }
+
+  try {
+    // Xác minh Refresh Token
+    const decoded = jwt.verify(refreshToken, 'your_refresh_secret_key');
+
+    // Tạo Access Token mới
+    const accessToken = jwt.sign(
+      { id: decoded.id, email: decoded.email },
+      'your_secret_key',
+      { expiresIn: '1h' }
+    );
+
+    res.send({
+      message: 'Access token refreshed successfully',
+      accessToken,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(403).send({ message: 'Invalid or expired refresh token' });
+  }
+};
 
 module.exports = {
   login,
   register,
+  refreshAccessToken, // Export API refresh token
 };
