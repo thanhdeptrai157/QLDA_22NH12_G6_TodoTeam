@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -10,10 +10,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
-
+import { useAuth } from "@/hooks/useAuth"
+import Cookies from "js-cookie"
+import { ACCESS_TOKEN_KEY } from "@/types/status"
 export default function RegisterPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const { handleRegister } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -22,6 +25,14 @@ export default function RegisterPage() {
     confirmPassword: "",
     phone: "",
   })
+
+
+  useEffect(() => {
+    const accessToken = Cookies.get(ACCESS_TOKEN_KEY)
+    if (accessToken) {
+      router.replace("/") // chuyển hướng đến trang chính
+    }
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -44,7 +55,12 @@ export default function RegisterPage() {
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+     await handleRegister(
+        formData.name,
+        formData.email,
+        formData.password,
+        formData.phone
+        )
 
       // Mock successful registration
       toast({

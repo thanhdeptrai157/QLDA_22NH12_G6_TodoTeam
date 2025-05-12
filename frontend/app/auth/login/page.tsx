@@ -29,7 +29,6 @@ export default function LoginPage() {
   })
   const { handleLogin } = useAuth()
 
-  // ✅ Kiểm tra nếu đã có access token -> redirect
   useEffect(() => {
     const accessToken = Cookies.get(ACCESS_TOKEN_KEY)
     if (accessToken) {

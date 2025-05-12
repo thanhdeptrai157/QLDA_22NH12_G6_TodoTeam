@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
@@ -5,9 +6,11 @@ import { PostCard } from "@/components/post-card"
 import { SearchBar } from "@/components/search-bar"
 import { CategoryHighlight } from "@/components/category-highlight"
 import { HeroSection } from "@/components/hero-section"
+import { useAuthStore } from "@/store/user"
 
 export default function Home() {
   // Mock data for featured posts
+  const {user} = useAuthStore()
   const featuredPosts = [
     {
       id: 1,
@@ -217,9 +220,9 @@ export default function Home() {
               <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
                 <Link href="/posts/create">Chia sẻ ngay</Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10" asChild>
+              {!user && <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10" asChild>
                 <Link href="/auth/register">Đăng ký tài khoản</Link>
-              </Button>
+              </Button>}
             </div>
           </div>
         </section>
