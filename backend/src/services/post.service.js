@@ -40,4 +40,26 @@ const getPostById = async (id) => {
     return post;
 };
 
-module.exports = { getAllPosts, createPost, getPostById };
+const getPostByIdPlace = async (place_id) => {
+    const post = await Post.findOne({
+        where: { place_id },
+        include: [
+            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: Category, attributes: ['id', 'name'] },
+            { model: Place, attributes: ['id', 'name', 'address'] }
+        ]
+    });
+
+    if (!post) {
+        throw new Error('Post not found');
+    }
+
+    return post;
+};
+
+module.exports = {
+  getAllPosts,
+  createPost,
+  getPostById,
+  getPostByIdPlace
+};

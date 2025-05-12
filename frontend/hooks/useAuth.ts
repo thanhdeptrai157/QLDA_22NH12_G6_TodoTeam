@@ -1,0 +1,93 @@
+"use client";
+
+import { AUTH } from "@/constants/api-endpoint";
+import { authService } from "@/service/auth-service";
+import { useAuthStore } from "@/store/user";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/types/status";
+import { set } from "date-fns";
+import Cookies from "js-cookie";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+
+export function useAuth() {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams?.get("callbackUrl") || "/";
+
+    const setUser = useAuthStore((state) => state.setUser);
+    const logout = useAuthStore((state) => state.logout);
+    // Đăng nhập
+    const handleLogin = async (username: string, password: string) => {
+        setIsLoading(true);
+        setMessage("");
+        setError("");
+
+        try {
+            const result = await authService.login(username, password);
+
+            const access = result?.data?.accessToken;
+            const refresh = result?.data?.refreshToken;
+            console.log(result)
+            setUser(result?.data?.user);
+            console.log(result?.data?.user);
+            if (!access || !refresh) {
+                setError("Tài khoản hoặc mật khẩu không đúng.");
+                return false;
+            }
+
+            // Lưu vào cookie
+            Cookies.set(ACCESS_TOKEN_KEY, access);
+            Cookies.set(REFRESH_TOKEN_KEY, refresh);
+
+            setMessage("Đăng nhập thành công!");
+            router.push(callbackUrl);
+            return true;
+        } catch (err: any) {
+            setError("Tài khoản hoặc mật khẩu không đúng.");
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Đăng ký
+    const handleRegister = async (
+        username: string,
+        email: string,
+        password: string,
+        confirmPassword: string
+    ) => {
+        setIsLoading(true);
+        setMessage("");
+        setError("");
+
+        try {
+            await authService.register(username, email, password, confirmPassword);
+
+            setMessage("Đăng ký thành công! Vui lòng kiểm tra email.");
+            return true;
+        } catch (err: any) {
+            setError(err.response?.data?.error || "Đã xảy ra lỗi khi đăng ký.");
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleLogout = () => {
+        logout()
+        Cookies.remove(ACCESS_TOKEN_KEY);
+        Cookies.remove(REFRESH_TOKEN_KEY);
+    };
+    return {
+        isLoading,
+        message,
+        error,
+        handleLogin,
+        handleRegister,
+        handleLogout,
+    };
+}
