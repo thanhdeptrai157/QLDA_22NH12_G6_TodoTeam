@@ -22,12 +22,11 @@ import { ACCESS_TOKEN_KEY } from "@/types/status"
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   })
-  const { handleLogin } = useAuth()
+  const {isLoading, error, message, handleLogin } = useAuth()
 
   useEffect(() => {
     const accessToken = Cookies.get(ACCESS_TOKEN_KEY)
@@ -43,23 +42,23 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
 
     try {
       const response = await handleLogin(formData.email, formData.password)
-      toast({
-        title: "Đăng nhập thành công",
-        description: "Chào mừng bạn quay trở lại!",
-      })
-      router.push("/")
+      if (response) {
+        toast({
+          title: "Đăng nhập thành công",
+          description: "Chào mừng bạn trở lại!",
+        })
+        router.push("/")
+      }
+      
     } catch (error) {
       toast({
         title: "Đăng nhập thất bại",
         description: "Email hoặc mật khẩu không chính xác",
         variant: "destructive",
       })
-    } finally {
-      setIsLoading(false)
     }
   }
 

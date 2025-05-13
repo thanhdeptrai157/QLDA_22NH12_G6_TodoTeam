@@ -1,10 +1,8 @@
 "use client";
 
-import { AUTH } from "@/constants/api-endpoint";
 import { authService } from "@/service/auth-service";
 import { useAuthStore } from "@/store/user";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/types/status";
-import { set } from "date-fns";
 import Cookies from "js-cookie";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
