@@ -130,7 +130,7 @@ export default function CategoriesPage() {
                   {category.featuredPlaces.map((place, index) => (
                     <Link
                       key={index}
-                      href={`/search?q=${encodeURIComponent(place)}&category=${category.slug}`}
+                      href={`/search/advanced/?address=${encodeURIComponent(place)}&category=${category.slug}`}
                       className="flex items-center gap-2 p-3 rounded-lg hover:bg-muted transition-colors"
                     >
                       <MapPin className={getCategoryTextClass(category.color)} />

@@ -6,12 +6,12 @@ const Comment = sequelize.define('comment', {
     user_id: { type: Sequelize.INTEGER, allowNull: false },
     content: { type: Sequelize.TEXT, allowNull: false },
     likes: { type: Sequelize.INTEGER, defaultValue: 0 },
-    createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
-    updatedAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW }
+    created_at: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
+    updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.NOW }
 }, {
     tableName: 'comment',
     timestamps: false
 });
 
-Comment.sync()
+Comment.sync();
 module.exports = Comment

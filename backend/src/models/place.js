@@ -3,10 +3,10 @@ const { Sequelize } = require('sequelize');
 const Place = sequelize.define(
   'place',
   {
-    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    id: { type: Sequelize.STRING, primaryKey: true},
     name: { type: Sequelize.STRING, allowNull: false },
     address: { type: Sequelize.STRING, allowNull: false },
-    averagestars: { type: Sequelize.DOUBLE, defaultValue: 0 },
+    average_stars: { type: Sequelize.DOUBLE, defaultValue: 0 },
   },
   {
     tableName: 'place',
