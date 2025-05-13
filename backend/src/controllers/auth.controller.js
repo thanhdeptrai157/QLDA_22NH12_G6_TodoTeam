@@ -69,8 +69,74 @@ const register = async (req, res) => {
     res.status(500).send({ message: 'Internal server error' });
   }
 };
+// API Refresh Token
+const refreshAccessToken = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(400).send({ message: 'Refresh token is required' });
+  }
+
+  try {
+    // Xác minh Refresh Token
+    const decoded = jwt.verify(refreshToken, 'your_refresh_secret_key');
+
+    // Tạo Access Token mới
+    const accessToken = jwt.sign(
+      { id: decoded.id, email: decoded.email },
+      'your_secret_key',
+      { expiresIn: '1h' }
+    );
+
+    res.send({
+      message: 'Access token refreshed successfully',
+      accessToken,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(403).send({ message: 'Invalid or expired refresh token' });
+  }
+};
+
+const changePassword = async (req, res) => {
+  const userId = req.params.id;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+    return res.status(400).json({ message: 'Both old and new passwords are required' });
+  }
+
+  try {
+    const result = await userService.changePassword(userId, oldPassword, newPassword);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { address, bio, phone } = req.body;
+
+    if (!req.body) {
+      return res.status(400).json({ message: 'Missing request body' });
+    }
+
+    const updatedUser = await userService.updateProfile(userId, { address, bio, phone });
+
+    res.json({ message: 'Update thành công', user: updatedUser });
+  } catch (err) {
+    console.error(err);
+    const statusCode = err.message === 'User not found' ? 404 : 500;
+    res.status(statusCode).json({ message: err.message });
+  }
+};
 
 module.exports = {
   login,
   register,
+  changePassword,
+  updateProfile
+  refreshAccessToken,
 };

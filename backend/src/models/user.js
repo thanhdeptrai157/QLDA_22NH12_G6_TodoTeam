@@ -6,11 +6,17 @@ const User = sequelize.define('user', {
     name: { type: Sequelize.STRING, allowNull: false },
     email: { type: Sequelize.STRING, allowNull: false, unique: true },
     password: { type: Sequelize.STRING, allowNull: false },
+    address: { type: Sequelize.STRING, allowNull: true },
+    bio: { type: Sequelize.STRING, allowNull: true },
     phone: { type: Sequelize.STRING },
     role: { type: Sequelize.ENUM('user', 'admin') , defaultValue: 'user' },
-    avatarPath: {
+    avatarpath: {
         type: Sequelize.STRING,
         field: 'avatarpath',
+    },
+    coverpath: {
+        type: Sequelize.STRING,
+        field: 'coverpath',
     }
 }, {
     tableName: 'user',

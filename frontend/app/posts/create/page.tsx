@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Camera, MapPin, ImageIcon, Smile, X, PlusCircle, Eye, Search, ChevronLeft } from "lucide-react"
 import { PostPreview } from "@/components/post-preview"
+import { useGoong } from "@/hooks/useGoong"
 
 export default function CreatePostPage() {
   const router = useRouter()
@@ -40,6 +41,8 @@ export default function CreatePostPage() {
     category: "",
     province: "",
   })
+
+  const { isLoading: isPlaceLoading, error: placeError, data: placeData, fetchPlaceSuggestion } = useGoong()
 
   // Check if there's a place ID or province in the URL
   useEffect(() => {
@@ -68,6 +71,32 @@ export default function CreatePostPage() {
       }))
     }
   }, [searchParams])
+
+  useEffect(() => {
+    if (placeData && placeData.predictions) {
+      setSearchResults(
+        placeData.predictions.map((item: any) => ({
+          id: item.place_id,
+          name: item.description,
+          address: item.structured_formatting?.secondary_text || "",
+        }))
+      )
+    }
+  }, [placeData])
+
+  // Debounce searchTerm for place search
+  useEffect(() => {
+    if (!showPlaceSearch) return;
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    const handler = setTimeout(() => {
+      fetchPlaceSuggestion(searchTerm);
+    }, 500); // 500ms debounce
+    return () => clearTimeout(handler);
+  }, [searchTerm, showPlaceSearch]);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -99,13 +128,8 @@ export default function CreatePostPage() {
   }
 
   const handlePlaceSearch = () => {
-    // Mock search results
     if (searchTerm.trim()) {
-      setSearchResults([
-        { id: 1, name: "Vịnh Hạ Long", address: "Quảng Ninh, Việt Nam" },
-        { id: 2, name: "Hạ Long Bay Cruise", address: "Quảng Ninh, Việt Nam" },
-        { id: 3, name: "Hang Sửng Sốt - Hạ Long", address: "Quảng Ninh, Việt Nam" },
-      ])
+      fetchPlaceSuggestion(searchTerm)
     } else {
       setSearchResults([])
     }
@@ -243,16 +267,21 @@ export default function CreatePostPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="flex-grow"
+                            autoFocus
                           />
-                          <Button type="button" onClick={handlePlaceSearch}>
-                            <Search className="h-4 w-4" />
-                          </Button>
+                          {/* Nút tìm kiếm đã bị loại bỏ */}
                           <Button type="button" variant="ghost" onClick={() => setShowPlaceSearch(false)}>
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
 
-                        {searchResults.length > 0 && (
+                        {isPlaceLoading && (
+                          <div className="text-center py-2 text-muted-foreground text-sm">Đang tìm kiếm...</div>
+                        )}
+                        {placeError && (
+                          <div className="text-center py-2 text-destructive text-sm">{placeError}</div>
+                        )}
+                        {searchResults.length > 0 && !isPlaceLoading && (
                           <div className="bg-background border rounded-md mt-1 max-h-60 overflow-y-auto">
                             {searchResults.map((place) => (
                               <div
