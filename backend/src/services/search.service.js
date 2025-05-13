@@ -22,13 +22,20 @@ exports.findByCategory = async (category_id) => {
 };
 
 
-exports.advancedSearch = async ({ keyword, locationName, category_id, stars }) => {
+exports.advancedSearch = async ({ keyword, locationName, address, category_id, stars }) => {
     const query = { where: {} };
 
     if (keyword) query.where.title = { [Op.like]: `%${keyword}%` };
     if (locationName) {
         const places = await Place.findAll({ 
             where: { name: { [Op.like]: `%${locationName}%` } } 
+        });
+        const placeIds = places.map(place => place.id);
+        query.where.place_id = placeIds;
+    }
+    if (address) {
+        const places = await Place.findAll({ 
+            where: { address: { [Op.like]: `%${address}%` } } 
         });
         const placeIds = places.map(place => place.id);
         query.where.place_id = placeIds;

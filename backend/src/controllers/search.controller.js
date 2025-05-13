@@ -23,8 +23,8 @@ exports.searchByCategory = async (req, res) => {
 
 exports.advancedSearch = async (req, res) => {
     try {
-        const { keyword, locationName, category_id, stars } = req.query;
-        const posts = await searchService.advancedSearch({ keyword, locationName, category_id, stars });
+        const { keyword, locationName, address, category_id, stars } = req.query;
+        const posts = await searchService.advancedSearch({ keyword, locationName, address, category_id, stars });
         res.status(200).json(posts);
     } catch (error) {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
