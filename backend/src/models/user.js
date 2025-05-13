@@ -1,7 +1,9 @@
 const sequelize = require('../config/database');
 const { Sequelize } = require('sequelize');
 
-const User = sequelize.define('user', {
+const User = sequelize.define(
+  'user',
+  {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: Sequelize.STRING, allowNull: false },
     email: { type: Sequelize.STRING, allowNull: false, unique: true },
@@ -9,19 +11,21 @@ const User = sequelize.define('user', {
     address: { type: Sequelize.STRING, allowNull: true },
     bio: { type: Sequelize.STRING, allowNull: true },
     phone: { type: Sequelize.STRING },
-    role: { type: Sequelize.ENUM('user', 'admin') , defaultValue: 'user' },
-    avatarpath: {
-        type: Sequelize.STRING,
-        field: 'avatarpath',
+    role: { type: Sequelize.ENUM('user', 'admin'), defaultValue: 'user' },
+    avatar_path: {
+      type: Sequelize.STRING,
+      field: 'avatar_path',
     },
-    coverpath: {
-        type: Sequelize.STRING,
-        field: 'coverpath',
-    }
-}, {
+    cover_path: {
+      type: Sequelize.STRING,
+      field: 'cover_path',
+    },
+  },
+  {
     tableName: 'user',
-    timestamps: false
-});
+    timestamps: false,
+  },
+);
 
 User.sync();
 module.exports = User;

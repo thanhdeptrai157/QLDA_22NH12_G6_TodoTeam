@@ -13,6 +13,7 @@ const authRoutes = require('./routes/auth.routes');
 const categoryRoutes = require('./routes/category.routers')
 const postRoutes = require('./routes/post.routes')
 const placeRoutes = require('./routes/place.routers')
+const uploadRouter = require('./routes/upload');
 
 
 // Routes
@@ -20,6 +21,7 @@ app.use('/auth', authRoutes);
 app.use('/posts', postRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/places', placeRoutes);
+app.use('/upload', uploadRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
