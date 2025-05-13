@@ -98,8 +98,45 @@ const refreshAccessToken = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const userId = req.params.id;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+    return res.status(400).json({ message: 'Both old and new passwords are required' });
+  }
+
+  try {
+    const result = await userService.changePassword(userId, oldPassword, newPassword);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { address, bio, phone } = req.body;
+
+    if (!req.body) {
+      return res.status(400).json({ message: 'Missing request body' });
+    }
+
+    const updatedUser = await userService.updateProfile(userId, { address, bio, phone });
+
+    res.json({ message: 'Update thành công', user: updatedUser });
+  } catch (err) {
+    console.error(err);
+    const statusCode = err.message === 'User not found' ? 404 : 500;
+    res.status(statusCode).json({ message: err.message });
+  }
+};
+
 module.exports = {
   login,
   register,
-  refreshAccessToken, // Export API refresh token
+  changePassword,
+  updateProfile
+  refreshAccessToken,
 };
