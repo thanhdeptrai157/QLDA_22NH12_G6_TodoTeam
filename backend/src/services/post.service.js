@@ -11,7 +11,11 @@ const getAllPosts = async () => {
 };
 
 const createPost = async (postData) => {
-    const { userId, title, content, categoryId, placeId, stars } = postData;
+    const { userId, title, content, categoryId, placeId, name , address, stars } = postData;
+    const place = await Place.findOne({ where: { id: placeId } });
+    if (!place) {
+        const newPlace = await Place.create({id: placeId, name, address });
+    }
 
     return await Post.create({
         userId,
@@ -63,3 +67,23 @@ module.exports = {
   getPostById,
   getPostByIdPlace
 };
+
+const updatePost = async (id, postData) => {
+    const post = await Post.findByPk(id);
+    if (!post) {
+        throw new Error('Post not found');
+    }
+    const { userId, title, content, categoryId, place_id, name , address, stars } = postData;
+    const place = await Place.findOne({ where: { id : place_id} });
+    if (place) {
+        const newPlace = await Place.create({id: place_id, name, address });
+    }
+    post.userId = userId;
+    post.title = title;
+    post.content = content;
+    post.category_id = categoryId;
+    post.place_id = place_id;
+    post.stars = stars;
+    await post.save();
+    return post;
+}

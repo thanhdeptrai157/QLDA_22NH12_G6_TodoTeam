@@ -5,8 +5,8 @@ const Like = sequelize.define('like', {
     is_post: { type: Sequelize.BOOLEAN },
     user_id: { type: Sequelize.INTEGER },
     target_id: { type: Sequelize.INTEGER },
-    createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
-    updatedAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW }
+    created_at: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
+    updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.NOW }
 }, {
     tableName: 'like', 
     timestamps: false
