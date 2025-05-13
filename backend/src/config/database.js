@@ -9,7 +9,7 @@ const sequelize = new Sequelize(process.env.PGDATABASE, process.env.PGUSER, proc
             rejectUnauthorized: false, // Tùy chọn này bỏ qua việc xác thực chứng chỉ (nếu cần)
         },
     },
-        logging: false, 
+     logging: false, 
 });
 
 sequelize
@@ -20,5 +20,12 @@ sequelize
     .catch((err) => {
         console.error('Unable to connect to the database:', err);
     });
-
+sequelize
+    .sync()
+    .then(() => {
+        console.log('Database & tables created!');
+    })
+    .catch((err) => {
+        console.error('Unable to create the database & tables:', err);
+    });
 module.exports = sequelize;

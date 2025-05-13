@@ -10,14 +10,14 @@ const User = sequelize.define('user', {
     bio: { type: Sequelize.STRING, allowNull: true },
     phone: { type: Sequelize.STRING },
     role: { type: Sequelize.ENUM('user', 'admin') , defaultValue: 'user' },
-    avatarpath: {
+    avatar_path: {
         type: Sequelize.STRING,
-        field: 'avatarpath',
     },
-    coverpath: {
+    cover_path: {
         type: Sequelize.STRING,
-        field: 'coverpath',
-    }
+    },
+    bio: { type: Sequelize.STRING },
+    address: { type: Sequelize.STRING },
 }, {
     tableName: 'user',
     timestamps: false
