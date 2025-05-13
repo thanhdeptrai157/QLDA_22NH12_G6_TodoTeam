@@ -35,10 +35,19 @@ const getPostByIdPlace = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 };
+const updatePost = async (req, res) => {
+    try {
+        const updatedPost = await postService.updatePost(req.params.id, req.body);
+        res.status(200).json({ message: 'Post updated successfully', post: updatedPost });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 module.exports = {
   getAllPosts,
   createPost,
   getPostById,
-  getPostByIdPlace
+getPostByIdPlace,
+updatePost
 };

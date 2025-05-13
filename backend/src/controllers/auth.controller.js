@@ -137,6 +137,6 @@ module.exports = {
   login,
   register,
   changePassword,
-  updateProfile
+  updateProfile,
   refreshAccessToken,
 };
