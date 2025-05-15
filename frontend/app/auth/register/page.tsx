@@ -1,23 +1,34 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks/useAuth"
 import Cookies from "js-cookie"
 import { ACCESS_TOKEN_KEY } from "@/types/status"
+
 export default function RegisterPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const { handleRegister } = useAuth()
+  const { handleRegister, error } = useAuth()
+
   const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState("")
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("")
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,11 +37,10 @@ export default function RegisterPage() {
     phone: "",
   })
 
-
   useEffect(() => {
     const accessToken = Cookies.get(ACCESS_TOKEN_KEY)
     if (accessToken) {
-      router.replace("/") // chuyển hướng đến trang chính
+      router.replace("/")
     }
   }, [])
 
@@ -41,40 +51,34 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setMessage("")
+    setMessageType("")
 
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Mật khẩu không khớp",
-        description: "Vui lòng kiểm tra lại mật khẩu xác nhận",
-        variant: "destructive",
-      })
+      setMessage("Mật khẩu không khớp. Vui lòng kiểm tra lại.")
+      setMessageType("error")
       return
     }
 
     setIsLoading(true)
 
     try {
-      // Simulate API call
-     await handleRegister(
+      await handleRegister(
         formData.name,
         formData.email,
         formData.password,
         formData.phone
-        )
+      )
 
-      // Mock successful registration
-      toast({
-        title: "Đăng ký thành công",
-        description: "Tài khoản của bạn đã được tạo thành công!",
-      })
+      setMessage("Đăng ký thành công! Chuyển hướng đến trang đăng nhập...")
+      setMessageType("success")
 
-      router.push("/auth/login")
-    } catch (error) {
-      toast({
-        title: "Đăng ký thất bại",
-        description: "Có lỗi xảy ra khi đăng ký tài khoản",
-        variant: "destructive",
-      })
+      setTimeout(() => {
+        router.push("/auth/login")
+      }, 2000)
+    } catch (err) {
+      setMessage("Có lỗi xảy ra khi đăng ký tài khoản." + error)
+      setMessageType("error")
     } finally {
       setIsLoading(false)
     }
@@ -153,6 +157,18 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Đang đăng ký..." : "Đăng ký"}
             </Button>
+
+            {/* Thông báo */}
+            {message && (
+              <div
+                className={`text-sm text-center ${
+                  messageType === "success" ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
             <div className="text-center text-sm">
               Đã có tài khoản?{" "}
               <Link href="/auth/login" className="text-primary hover:underline">
@@ -165,4 +181,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-

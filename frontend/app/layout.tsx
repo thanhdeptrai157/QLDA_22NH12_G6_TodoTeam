@@ -12,7 +12,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "TravelShare - Chia sẻ trải nghiệm du lịch",
   description: "Nền tảng chia sẻ trải nghiệm du lịch và đánh giá địa điểm",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({

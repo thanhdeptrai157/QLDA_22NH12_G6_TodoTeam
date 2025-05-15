@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const userService = require('../services/auth.service');
-const supabase = require('../../supabase/supabase');
+const supabase = require('../config/supabase');
 const upload = require('../middlewares/upload');
 
 // Đăng nhập
@@ -57,7 +57,7 @@ const register = async (req, res) => {
     // Kiểm tra xem email đã tồn tại chưa
     const existingUser = await userService.getUserByEmail(email);
     if (existingUser) {
-      return res.status(400).send({ message: 'Email already exists' });
+      return res.status(409).send({ message: 'Email already exists' });
     }
 
     // Mã hóa mật khẩu

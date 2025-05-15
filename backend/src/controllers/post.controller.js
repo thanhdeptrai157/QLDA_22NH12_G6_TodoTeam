@@ -45,9 +45,9 @@ const updatePost = async (req, res) => {
 };
 
 module.exports = {
-  getAllPosts,
-  createPost,
-  getPostById,
-getPostByIdPlace,
-updatePost
+    getAllPosts,
+    createPost,
+    getPostById,
+    getPostByIdPlace,
+    updatePost
 };
