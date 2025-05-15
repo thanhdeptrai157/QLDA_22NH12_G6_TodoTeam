@@ -1,6 +1,9 @@
-const bcrypt = require('bcrypt'); 
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const userService = require('../services/auth.service');
+const supabase = require('../../supabase/supabase');
+const upload = require('../middlewares/upload');
+
 // Đăng nhập
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -16,8 +19,16 @@ const login = async (req, res) => {
       return res.status(401).send({ message: 'Invalid credentials' });
     }
 
-    const accessToken = jwt.sign({ id: user.id, email: user.email }, 'your_secret_key', { expiresIn: '1h' });
-    const refreshToken = jwt.sign({ id: user.id, email: user.email }, 'your_refresh_secret_key', { expiresIn: '7d' });
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email },
+      'your_secret_key',
+      { expiresIn: '1h' },
+    );
+    const refreshToken = jwt.sign(
+      { id: user.id, email: user.email },
+      'your_refresh_secret_key',
+      { expiresIn: '7d' },
+    );
     const safeUser = {
       id: user.id,
       name: user.name,
@@ -26,7 +37,12 @@ const login = async (req, res) => {
       avatarPath: user.avatarPath,
       role: user.role,
     };
-    res.send({ message: 'Login successful', accessToken, refreshToken, user: safeUser });
+    res.send({
+      message: 'Login successful',
+      accessToken,
+      refreshToken,
+      user: safeUser,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Internal server error' });
@@ -52,12 +68,20 @@ const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      phone
+      phone,
     });
 
     // Tạo token JWT
-    const accessToken = jwt.sign({ id: newUser.id, email: newUser.email }, 'your_secret_key', { expiresIn: '1h' });
-    const refreshToken = jwt.sign({ id: newUser.id, email: newUser.email }, 'your_refresh_secret_key', { expiresIn: '7d' });
+    const accessToken = jwt.sign(
+      { id: newUser.id, email: newUser.email },
+      'your_secret_key',
+      { expiresIn: '1h' },
+    );
+    const refreshToken = jwt.sign(
+      { id: newUser.id, email: newUser.email },
+      'your_refresh_secret_key',
+      { expiresIn: '7d' },
+    );
 
     res.status(201).send({
       message: 'User registered successfully',
@@ -85,7 +109,7 @@ const refreshAccessToken = async (req, res) => {
     const accessToken = jwt.sign(
       { id: decoded.id, email: decoded.email },
       'your_secret_key',
-      { expiresIn: '1h' }
+      { expiresIn: '1h' },
     );
 
     res.send({
@@ -103,11 +127,17 @@ const changePassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
-    return res.status(400).json({ message: 'Both old and new passwords are required' });
+    return res
+      .status(400)
+      .json({ message: 'Both old and new passwords are required' });
   }
 
   try {
-    const result = await userService.changePassword(userId, oldPassword, newPassword);
+    const result = await userService.changePassword(
+      userId,
+      oldPassword,
+      newPassword,
+    );
     res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -123,7 +153,63 @@ const updateProfile = async (req, res) => {
       return res.status(400).json({ message: 'Missing request body' });
     }
 
-    const updatedUser = await userService.updateProfile(userId, { address, bio, phone });
+    const files = req.files;
+    const errors = [];
+    let avatar_path;
+    let cover_path;
+
+    // Hàm phụ để upload 1 ảnh và trả về public URL
+    const uploadToSupabase = async (file) => {
+      const fileName = `${Date.now()}_${file.originalname}`;
+      const { data, error } = await supabase.storage
+        .from('image-travel-app')
+        .upload(fileName, file.buffer, {
+          contentType: file.mimetype,
+        });
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      const publicUrl = `${process.env.SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/image-travel-app/${fileName}`;
+      return { url: publicUrl };
+    };
+
+    // Xử lý ảnh avata
+    if (files.avatar_path && files.avatar_path.length > 0) {
+      const { url, error } = await uploadToSupabase(files.avatar_path[0]);
+      if (error) {
+        res.json({error: errors.push({ field: 'avatar', message: error })});
+      } else {
+        avatar_path = url;
+      }
+    }
+
+    // Xử lý ảnh background
+    if (files.cover_path && files.cover_path.length > 0) {
+      const { url, error } = await uploadToSupabase(files.cover_path[0]);
+      if (error) {
+        res.json({error: errors.push({ field: 'cover', message: error })});
+      } else {
+        cover_path = url;
+      }
+    }
+
+    const updateData = {
+      address,
+      bio,
+      phone,
+    };
+
+    if (avatar_path) {
+      updateData.avatar_path = avatar_path;
+    }
+
+    if (cover_path) {
+      updateData.cover_path = cover_path;
+    }
+
+    const updatedUser = await userService.updateProfile(userId, updateData);
 
     res.json({ message: 'Update thành công', user: updatedUser });
   } catch (err) {

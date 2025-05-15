@@ -11,6 +11,13 @@ router.post('/register', authController.register);
 
 router.put('/:id/change-password', authController.changePassword);
 
-router.put( '/:id/profile', authController.updateProfile);
+router.put(
+  '/:id/profile',
+  upload.fields([
+    { name: 'avatar_path', maxCount: 1 },
+    { name: 'cover_path', maxCount: 1 },
+  ]),
+  authController.updateProfile
+);
 
 module.exports = router;
