@@ -11,6 +11,7 @@ const getAllPosts = async (req, res) => {
 
 const createPost = async (req, res) => {
     try {
+        console.log(req.body)
         const newPost = await postService.createPost(req.body);
         res.status(201).json({ message: 'Post created successfully', post: newPost });
     } catch (error) {

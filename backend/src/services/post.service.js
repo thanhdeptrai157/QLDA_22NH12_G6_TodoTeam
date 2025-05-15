@@ -11,18 +11,19 @@ const getAllPosts = async () => {
 };
 
 const createPost = async (postData) => {
-    const { userId, title, content, categoryId, placeId, name , address, stars } = postData;
-    const place = await Place.findOne({ where: { id: placeId } });
+    const { user_id, title, content, category_id, place_id, image, name , address, stars } = postData;
+    const place = await Place.findOne({ where: { id: place_id } });
     if (!place) {
-        const newPlace = await Place.create({id: placeId, name, address });
+        const newPlace = await Place.create({id: place_id, name, address });
     }
-
+    console.log(postData)
     return await Post.create({
-        userId,
+        user_id,
         title,
         content,
-        category_id: categoryId,
-        place_id: placeId,
+        category_id,
+        place_id,
+        image,
         stars
     });
 };
@@ -73,16 +74,17 @@ const updatePost = async (id, postData) => {
     if (!post) {
         throw new Error('Post not found');
     }
-    const { userId, title, content, categoryId, place_id, name , address, stars } = postData;
+    const { user_id, title, content, category_id, place_id, name ,image, address, stars } = postData;
     const place = await Place.findOne({ where: { id : place_id} });
-    if (place) {
+    if (!place) {
         const newPlace = await Place.create({id: place_id, name, address });
     }
-    post.userId = userId;
+    post.user_id = user_id;
     post.title = title;
     post.content = content;
-    post.category_id = categoryId;
+    post.category_id = category_id;
     post.place_id = place_id;
+    post.image = image;
     post.stars = stars;
     await post.save();
     return post;
