@@ -10,7 +10,7 @@ router.post('/', postController.createPost);
 
 // Route to get a post by ID
 router.get('/:id', postController.getPostById);
-
+router.get('/user/:user_id', postController.getPostByIdUser);
 router.get('/get_by_place_id/:place_id', postController.getPostByIdPlace);
 router.put('/:id', postController.updatePost);
 module.exports = router;

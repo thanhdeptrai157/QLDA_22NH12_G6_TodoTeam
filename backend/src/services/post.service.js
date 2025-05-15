@@ -62,12 +62,6 @@ const getPostByIdPlace = async (place_id) => {
     return post;
 };
 
-module.exports = {
-  getAllPosts,
-  createPost,
-  getPostById,
-  getPostByIdPlace
-};
 
 const updatePost = async (id, postData) => {
     const post = await Post.findByPk(id);
@@ -89,3 +83,27 @@ const updatePost = async (id, postData) => {
     await post.save();
     return post;
 }
+const getPostByIdUser = async (user_id) => {
+    const post = await Post.findAll({
+        where: { user_id },
+        include: [
+            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: Category, attributes: ['id', 'name'] },
+            { model: Place, attributes: ['id', 'name', 'address'] }
+        ]
+    });
+
+    if (!post) {
+        throw new Error('Post not found');
+    }
+
+    return post;
+}
+module.exports = {
+  getAllPosts,
+  createPost,
+  getPostById,
+    getPostByIdPlace,
+    updatePost,
+    getPostByIdUser
+};
