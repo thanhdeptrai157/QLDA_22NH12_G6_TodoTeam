@@ -17,4 +17,11 @@ export const GOONG = {
 export const POST = {
     GET_POST: "/posts/", 
     CREATE_POST: "/posts/",
+    GET_DETAIL_POST(id: number ){
+        return `/posts/${id}`
+    }
+}
+
+export const CATEGORY = {
+    GET_CATEGORY: "/categories/",
 }

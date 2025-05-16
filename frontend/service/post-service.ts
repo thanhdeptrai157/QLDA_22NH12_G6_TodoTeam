@@ -1,8 +1,8 @@
 import api from "@/configs/axios";
 import { POST } from "@/constants/api-endpoint";
-import { Post } from "@/types/post";
+import { CreatePostPayload, Post } from "@/types/post";
 
-const getAllPosts = async () => {
+const getAllUserPosts = async (id_user: number) => {
     try {
         const response = await api.get(POST.GET_POST);
         return response.data;
@@ -13,10 +13,20 @@ const getAllPosts = async () => {
     }
 }
 
-
-const createPost = async (data: Post) => {
+const getDetailPost = async (id: number) =>{
+    try{
+        const response = await api.get(POST.GET_DETAIL_POST(id));
+        return response.data
+    }
+    catch(error){
+        console.log(error)
+        throw error
+    }
+}
+const createPost = async (data: CreatePostPayload) => {
     try {
         const response = await api.post(POST.CREATE_POST, data);
+        
         return response.data;
     }
     catch (error) {
@@ -27,6 +37,7 @@ const createPost = async (data: Post) => {
 
 
 export const postService = {
-    getAllPosts,
+    getAllUserPosts,
     createPost,
+    getDetailPost
 };

@@ -21,128 +21,18 @@ import {
   ImageIcon,
   Bookmark,
 } from "lucide-react"
+import { useAuthStore } from "@/store/user"
+import { Post } from "@/types/post"
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("posts")
-
-  // Mock user data
-  const user = {
-    id: 1,
-    name: "Nguyễn Văn A",
-    username: "nguyenvana",
-    bio: "Yêu du lịch | Nhiếp ảnh gia | Foodie | Đã đến 20+ tỉnh thành Việt Nam",
-    avatarPath: "/placeholder.svg?height=200&width=200",
-    coverPath: "/placeholder.svg?height=400&width=1200",
-    email: "nguyenvana@example.com",
-    phone: "0123456789",
-    location: "Hà Nội, Việt Nam",
-    joinDate: "Tháng 3, 2023",
-    followers: 245,
-    following: 123,
-    posts: 36,
-  }
-
-  // Mock posts data
-  const userPosts = [
-    {
-      id: 1,
-      title: "Khám phá vẻ đẹp hoang sơ của Vịnh Hạ Long",
-      content: "Trải nghiệm tuyệt vời với những hòn đảo đá vôi và hang động kỳ thú...",
-      likes: 245,
-      createdAt: "2025-03-15",
-      updatedAt: "2025-03-15",
-      status: true,
-      author: {
-        id: 1,
-        name: user.name,
-        avatarPath: user.avatarPath,
-      },
-      place: {
-        id: 1,
-        name: "Vịnh Hạ Long",
-        address: "Quảng Ninh, Việt Nam",
-        averageStar: 4.8,
-      },
-      category: {
-        name: "Biển",
-        slug: "beach",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-    {
-      id: 2,
-      title: "Sapa - Thiên đường mây trắng",
-      content: "Những trải nghiệm không thể quên với ruộng bậc thang và văn hóa dân tộc...",
-      likes: 189,
-      createdAt: "2025-03-10",
-      updatedAt: "2025-03-10",
-      status: true,
-      author: {
-        id: 1,
-        name: user.name,
-        avatarPath: user.avatarPath,
-      },
-      place: {
-        id: 2,
-        name: "Sapa",
-        address: "Lào Cai, Việt Nam",
-        averageStar: 4.6,
-      },
-      category: {
-        name: "Núi",
-        slug: "mountain",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-  ]
-
-  // Mock saved posts
-  const savedPosts = [
-    {
-      id: 3,
-      title: "Phố cổ Hội An - Nơi thời gian ngừng lại",
-      content: "Khám phá nét đẹp cổ kính và yên bình của phố cổ Hội An...",
-      likes: 320,
-      createdAt: "2025-03-05",
-      updatedAt: "2025-03-05",
-      status: true,
-      author: {
-        id: 3,
-        name: "Lê Văn C",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 3,
-        name: "Phố cổ Hội An",
-        address: "Quảng Nam, Việt Nam",
-        averageStar: 4.9,
-      },
-      category: {
-        name: "Thành phố",
-        slug: "city",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-  ]
-
-  // Mock photos
-  const photos = [
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-    "/placeholder.svg?height=300&width=300",
-  ]
-
+  const [userPost, setUserPost] = useState<Post>([])
+  const {user }= useAuthStore()
   return (
     <div className="min-h-screen bg-muted/30 dark:bg-background">
       {/* Cover Photo */}
       <div className="relative h-[300px] md:h-[350px] lg:h-[400px] w-full">
-        <Image src={user.coverPath || "/placeholder.svg"} alt="Cover" fill className="object-cover" />
+        <Image src={user?.avatarPath || "/placeholder.svg"} alt="Cover" fill className="object-cover" />
         <div className="absolute bottom-4 right-4 flex gap-2">
           <Button size="sm" variant="secondary" className="bg-white/80 dark:bg-black/50 backdrop-blur-sm" asChild>
             <Link href="/profile/edit">
@@ -158,8 +48,8 @@ export default function ProfilePage() {
         <div className="relative -mt-20 mb-6 flex flex-col md:flex-row gap-6 items-start md:items-end">
           <div className="relative">
             <Avatar className="h-36 w-36 border-4 border-background dark:border-background">
-              <AvatarImage src={user.avatarPath} alt={user.name} />
-              <AvatarFallback className="text-4xl">{user.name.charAt(0)}</AvatarFallback>
+              <AvatarImage src={user?.avatarPath} alt={user?.name} />
+              <AvatarFallback className="text-4xl">{user?.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <Button
               size="icon"
@@ -173,18 +63,18 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex-grow">
-            <h1 className="text-3xl font-bold">{user.name}</h1>
-            <p className="text-muted-foreground">@{user.username}</p>
-            <p className="mt-2 max-w-xl">{user.bio}</p>
+            <h1 className="text-3xl font-bold">{user?.name}</h1>
+            <p className="text-muted-foreground">@{user?.email}</p>
+            {/* <p className="mt-2 max-w-xl">{user.bio}</p> */}
 
             <div className="flex flex-wrap gap-4 mt-4">
               <div className="flex items-center gap-1 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span>{user.location}</span>
+                {/* <span>{user.location}</span> */}
               </div>
               <div className="flex items-center gap-1 text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                <span>Tham gia {user.joinDate}</span>
+                {/* <span>Tham gia {user.joinDate}</span> */}
               </div>
             </div>
           </div>
@@ -209,19 +99,19 @@ export default function ProfilePage() {
         <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
           <Card className="bg-card">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold">{user.posts}</p>
+              {/* <p className="text-2xl font-bold">{user.posts}</p> */}
               <p className="text-sm text-muted-foreground">Bài viết</p>
             </CardContent>
           </Card>
           <Card className="bg-card">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold">{user.followers}</p>
+              {/* <p className="text-2xl font-bold">{user.followers}</p> */}
               <p className="text-sm text-muted-foreground">Người theo dõi</p>
             </CardContent>
           </Card>
           <Card className="bg-card">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold">{user.following}</p>
+              {/* <p className="text-2xl font-bold">{user.following}</p> */}
               <p className="text-sm text-muted-foreground">Đang theo dõi</p>
             </CardContent>
           </Card>
@@ -230,11 +120,11 @@ export default function ProfilePage() {
               <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{user.email}</span>
+                  <span>{user?.email}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{user.phone}</span>
+                  {/* <span>{user?.}</span> */}
                 </div>
               </div>
             </CardContent>
@@ -278,7 +168,7 @@ export default function ProfilePage() {
             )}
           </TabsContent>
 
-          <TabsContent value="photos" className="mt-6">
+          {/* <TabsContent value="photos" className="mt-6">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {photos.map((photo, index) => (
                 <div key={index} className="aspect-square relative rounded-md overflow-hidden">
@@ -315,9 +205,9 @@ export default function ProfilePage() {
                 </Button>
               </div>
             )}
-          </TabsContent>
+          </TabsContent> */}
 
-          <TabsContent value="about" className="mt-6">
+          {/* <TabsContent value="about" className="mt-6">
             <Card>
               <CardContent className="p-6">
                 <h2 className="text-xl font-bold mb-4">Giới thiệu</h2>
@@ -360,7 +250,7 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </div>
