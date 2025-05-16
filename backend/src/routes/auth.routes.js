@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/auth.controller');
 const upload = require('../middlewares/upload');
-const authenticateToken = require('../middlewares/authMiddlaware');
+const authenticateToken = require('../middlewares/authMiddleware');
 // const { authorize } = require('../middlewares/authorize');
 
 // Route đăng nhập

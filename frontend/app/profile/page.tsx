@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -23,11 +23,30 @@ import {
 } from "lucide-react"
 import { useAuthStore } from "@/store/user"
 import { Post } from "@/types/post"
+import { usePost } from "@/hooks/usePost"
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("posts")
-  const [userPost, setUserPost] = useState<Post>([])
+  const [userPosts, setUserPosts] = useState<Post[]>([])
   const {user }= useAuthStore()
+  const { isLoading, error, getPostByUserId} = usePost()
+
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!user?.id) return
+
+      try {
+        const posts = await getPostByUserId(Number.parseInt(user?.id))
+        console.log(posts)
+        setUserPosts(posts)
+      } catch (err) {
+        console.error("Error fetching user posts:", err)
+      }
+    }
+
+    fetchPosts()
+  }, [user?.id])
   return (
     <div className="min-h-screen bg-muted/30 dark:bg-background">
       {/* Cover Photo */}

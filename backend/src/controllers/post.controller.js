@@ -44,6 +44,7 @@ const updatePost = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
 const getPostByIdUser = async (req, res) => {
     try {
         const post = await postService.getPostByIdUser(req.params.user_id);
@@ -52,12 +53,11 @@ const getPostByIdUser = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
-
 module.exports = {
-  getAllPosts,
-  createPost,
-  getPostById,
-getPostByIdPlace,
+    getAllPosts,
+    createPost,
+    getPostById,
+    getPostByIdPlace,
     updatePost,
     getPostByIdUser
 };

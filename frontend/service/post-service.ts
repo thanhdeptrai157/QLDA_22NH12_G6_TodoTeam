@@ -2,9 +2,9 @@ import api from "@/configs/axios";
 import { POST } from "@/constants/api-endpoint";
 import { CreatePostPayload, Post } from "@/types/post";
 
-const getAllUserPosts = async (id_user: number) => {
+const getAllUserPosts = async (user_id: number) => {
     try {
-        const response = await api.get(POST.GET_POST);
+        const response = await api.get(POST.GET_POST_BY_USER(user_id));
         return response.data;
     }
     catch (error) {

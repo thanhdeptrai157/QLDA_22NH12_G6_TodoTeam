@@ -1,16 +1,29 @@
 export interface Post {
   id?: number;
-  user_id: number;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  },
   place_id: string | null;
   stars: number | null;
   category_id?: number | null;
   title: string;
   content: string;
   likes: number;
-  image?: string | null;
-  created_at: string; 
-  updated_at: string; 
+  image: string[];
+  created_at: string;
+  updated_at: string;
   status: boolean;
+  place: {
+    id: string;
+    name: string;
+    address: string;
+  },
+  category: {
+    id: number;
+    name: string;
+  }
 }
 
 export interface CreatePostPayload {
@@ -20,7 +33,7 @@ export interface CreatePostPayload {
   category_id: number | null;
   title: string;
   content: string;
-  image?: string | null;
+  images?: string[];
   // for place details
   place_name: string;
   place_address: string;
