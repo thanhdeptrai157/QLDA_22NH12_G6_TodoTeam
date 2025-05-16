@@ -11,10 +11,10 @@ const getAllPosts = async () => {
 };
 
 const createPost = async (postData) => {
-    const { user_id, title, content, category_id, place_id, image, name , address, stars } = postData;
+    const { user_id, title, content, category_id, place_id, images, place_name , place_address, stars } = postData;
     const place = await Place.findOne({ where: { id: place_id } });
     if (!place) {
-        const newPlace = await Place.create({id: place_id, name, address });
+        const newPlace = await Place.create({id: place_id, name: place_name, address: place_address });
     }
     console.log(postData)
     return await Post.create({
@@ -23,7 +23,7 @@ const createPost = async (postData) => {
         content,
         category_id,
         place_id,
-        image,
+        image: images,
         stars
     });
   }
