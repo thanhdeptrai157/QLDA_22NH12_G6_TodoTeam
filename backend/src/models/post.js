@@ -21,5 +21,4 @@ const Post = sequelize.define(
     timestamps: false,
   },
 );
-Post.sync();
 module.exports = Post;

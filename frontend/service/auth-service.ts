@@ -26,14 +26,28 @@ const register = async (name: string, email: string, password: string, phone: st
             password,
             phone,
         });
+        console.log("Register response", response);
         return response;
     } catch (error) {
         console.error("Register failed", error);
         throw error;
     }
 }
+
+const changePassword = async (id: number, oldPassword: string, newPassword: string) => {
+    try {
+        const response = await api.post(AUTH.CHANGE_PASSWORD(id), {
+            oldPassword,
+            newPassword,
+        });
+        return response;
+    } catch (error) {
+        console.error("Change password failed", error);
+        throw error;
+    }
+}
 export const authService = {
     login,
     register,
-
+    changePassword,
 };

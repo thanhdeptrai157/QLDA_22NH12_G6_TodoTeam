@@ -26,7 +26,7 @@ const createPost = async (postData) => {
         image,
         stars
     });
-};
+  }
 
 const getPostById = async (id) => {
     const post = await Post.findOne({

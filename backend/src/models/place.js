@@ -13,5 +13,4 @@ const Place = sequelize.define(
     timestamps: false,
   },
 );
-Place.sync();
 module.exports = Place;

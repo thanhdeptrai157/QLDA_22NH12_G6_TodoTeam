@@ -20,12 +20,12 @@ sequelize
     .catch((err) => {
         console.error('Unable to connect to the database:', err);
     });
-sequelize
-    .sync()
-    .then(() => {
-        console.log('Database & tables created!');
-    })
-    .catch((err) => {
-        console.error('Unable to create the database & tables:', err);
-    });
+// sequelize
+//     .sync()
+//     .then(() => {
+//         console.log('Database & tables created!');
+//     })
+//     .catch((err) => {
+//         console.error('Unable to create the database & tables:', err);
+//     });
 module.exports = sequelize;

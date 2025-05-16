@@ -28,20 +28,16 @@ export function useAuth() {
 
             const access = result?.data?.accessToken;
             const refresh = result?.data?.refreshToken;
-            console.log(result)
             setUser(result?.data?.user);
-            console.log(result?.data?.user);
             if (!access || !refresh) {
                 setError("Tài khoản hoặc mật khẩu không đúng.");
                 return false;
             }
-
             // Lưu vào cookie
             Cookies.set(ACCESS_TOKEN_KEY, access);
             Cookies.set(REFRESH_TOKEN_KEY, refresh);
 
             setMessage("Đăng nhập thành công!");
-            router.push(callbackUrl);
             return true;
         } catch (err: any) {
             setError("Tài khoản hoặc mật khẩu không đúng.");
@@ -64,12 +60,12 @@ export function useAuth() {
 
         try {
             await authService.register(name, email, password, phone);
-
+            
             setMessage("Đăng ký thành công! Vui lòng kiểm tra email.");
             return true;
         } catch (err: any) {
             setError(err.response?.data?.error || "Đã xảy ra lỗi khi đăng ký.");
-            return false;
+            throw err;
         } finally {
             setIsLoading(false);
         }

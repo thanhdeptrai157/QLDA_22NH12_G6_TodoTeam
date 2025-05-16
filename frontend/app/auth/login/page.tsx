@@ -22,16 +22,23 @@ import { ACCESS_TOKEN_KEY } from "@/types/status"
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   })
-  const {isLoading, error, message, handleLogin } = useAuth()
+
+  const [loginStatus, setLoginStatus] = useState<{
+    success: boolean
+    message: string
+  } | null>(null)
+
+  const { isLoading, error, message, handleLogin } = useAuth()
 
   useEffect(() => {
     const accessToken = Cookies.get(ACCESS_TOKEN_KEY)
     if (accessToken) {
-      router.replace("/") // chuyển hướng đến trang chính
+      router.replace("/")
     }
   }, [])
 
@@ -46,20 +53,26 @@ export default function LoginPage() {
     try {
       const response = await handleLogin(formData.email, formData.password)
       if (response) {
-        toast({
-          title: "Đăng nhập thành công",
-          description: "Chào mừng bạn trở lại!",
+        setLoginStatus({
+          success: true,
+          message: "Đăng nhập thành công! Chào mừng bạn.",
         })
-        router.push("/")
+        setTimeout(() => {
+          router.push("/")
+        }, 1000)
+      } else {
+        setLoginStatus({  
+          success: false,
+          message: error || "Email hoặc mật khẩu không chính xác.",
+        })
       }
-      
     } catch (error) {
-      toast({
-        title: "Đăng nhập thất bại",
-        description: "Email hoặc mật khẩu không chính xác",
-        variant: "destructive",
+      setLoginStatus({
+        success: false,
+        message: "Email hoặc mật khẩu không chính xác.",
       })
     }
+    setTimeout(() => setLoginStatus(null), 3000)
   }
 
   return (
@@ -109,6 +122,15 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
+            {loginStatus && (
+              <p
+                className={`text-sm text-center ${
+                  loginStatus.success ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {loginStatus.message}
+              </p>
+            )}
             <div className="text-center text-sm">
               Chưa có tài khoản?{" "}
               <Link href="/auth/register" className="text-primary hover:underline">

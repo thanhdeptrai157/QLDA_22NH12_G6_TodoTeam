@@ -18,6 +18,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Camera, MapPin, ImageIcon, Smile, X, PlusCircle, Eye, Search, ChevronLeft } from "lucide-react"
 import { PostPreview } from "@/components/post-preview"
 import { useGoong } from "@/hooks/useGoong"
+import { useAuthStore } from "@/store/user"
+import { useCategory } from "@/hooks/useCategory"
+import { postService } from "@/service/post-service"
+import { supabase } from "@/configs/supabase"
 
 export default function CreatePostPage() {
   const router = useRouter()
@@ -31,72 +35,55 @@ export default function CreatePostPage() {
   const [showPlaceSearch, setShowPlaceSearch] = useState(false)
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const user = useAuthStore((state) => state.user)
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth/login")
+    }
+  }, [user])
 
   const [formData, setFormData] = useState({
+    user_id: user?.id || "",
     title: "",
     content: "",
     placeName: "",
     placeAddress: "",
     placeId: "",
-    category: "",
-    province: "",
+    categoryId: "",
+    star: 0,
+    image: [] as string[],
   })
 
   const { isLoading: isPlaceLoading, error: placeError, data: placeData, fetchPlaceSuggestion } = useGoong()
+  const { isLoading: isCategoryLoading, error: categoryError, category: categoryData } = useCategory()
 
-  // Check if there's a place ID or province in the URL
-  useEffect(() => {
-    const placeId = searchParams.get("place")
-    const province = searchParams.get("province")
-
-    if (placeId) {
-      // Mock fetching place data
-      const mockPlace = {
-        id: placeId,
-        name: "Vịnh Hạ Long",
-        address: "Quảng Ninh, Việt Nam",
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        placeName: mockPlace.name,
-        placeAddress: mockPlace.address,
-        placeId: mockPlace.id,
-      }))
-    } else if (province) {
-      // Set province but leave place empty for user to select
-      setFormData((prev) => ({
-        ...prev,
-        province: province,
-      }))
-    }
-  }, [searchParams])
 
   useEffect(() => {
-    if (placeData && placeData.predictions) {
+    if (placeData?.predictions) {
       setSearchResults(
         placeData.predictions.map((item: any) => ({
           id: item.place_id,
-          name: item.description,
+          name: item.description.split(',')[0],
           address: item.structured_formatting?.secondary_text || "",
         }))
       )
     }
   }, [placeData])
 
-  // Debounce searchTerm for place search
   useEffect(() => {
-    if (!showPlaceSearch) return;
+    if (!showPlaceSearch) return
     if (!searchTerm.trim()) {
-      setSearchResults([]);
-      return;
+      setSearchResults([])
+      return
     }
     const handler = setTimeout(() => {
-      fetchPlaceSuggestion(searchTerm);
-    }, 500); // 500ms debounce
-    return () => clearTimeout(handler);
-  }, [searchTerm, showPlaceSearch]);
-  
+      fetchPlaceSuggestion(searchTerm)
+    }, 500)
+    return () => clearTimeout(handler)
+  }, [searchTerm, showPlaceSearch])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -109,6 +96,7 @@ export default function CreatePostPage() {
 
   const handleRatingChange = (value: number) => {
     setRating(value)
+    setFormData((prev) => ({ ...prev, star: value }))
   }
 
   const handleImageClick = () => {
@@ -118,21 +106,31 @@ export default function CreatePostPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files) {
-      const newImages = Array.from(files).map((file) => URL.createObjectURL(file))
-      setSelectedImages((prev) => [...prev, ...newImages])
+      const fileArray = Array.from(files)
+      setImageFiles((prev) => [...prev, ...fileArray])
+
+      const readers = fileArray.map((file) => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader()
+          reader.onloadend = () => {
+            if (typeof reader.result === "string") resolve(reader.result)
+          }
+          reader.readAsDataURL(file)
+        })
+      })
+
+      Promise.all(readers).then((base64Images) => {
+        setSelectedImages((prev) => [...prev, ...base64Images])
+      })
     }
   }
-
   const removeImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const handlePlaceSearch = () => {
-    if (searchTerm.trim()) {
-      fetchPlaceSuggestion(searchTerm)
-    } else {
-      setSearchResults([])
-    }
+    const updatedImages = selectedImages.filter((_, i) => i !== index)
+    setSelectedImages(updatedImages)
+    setFormData((prev) => ({
+      ...prev,
+      image: updatedImages,
+    }))
   }
 
   const selectPlace = (place: any) => {
@@ -146,32 +144,19 @@ export default function CreatePostPage() {
     setSearchResults([])
     setSearchTerm("")
   }
-
+  console.log("formData", formData)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.title.trim()) {
+    if (
+      !formData.title.trim() ||
+      !formData.placeName ||
+      formData.star === 0 ||
+      imageFiles.length === 0
+    ) {
       toast({
-        title: "Tiêu đề không được để trống",
-        description: "Vui lòng nhập tiêu đề cho bài viết của bạn",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (!formData.placeName) {
-      toast({
-        title: "Địa điểm không được để trống",
-        description: "Vui lòng chọn địa điểm cho bài viết của bạn",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (rating === 0) {
-      toast({
-        title: "Đánh giá không hợp lệ",
-        description: "Vui lòng đánh giá địa điểm từ 1-5 sao",
+        title: "Thiếu thông tin",
+        description: "Vui lòng điền đầy đủ các trường bắt buộc",
         variant: "destructive",
       })
       return
@@ -180,17 +165,43 @@ export default function CreatePostPage() {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const imageUrls: string[] = []
 
-      // Mock successful post creation
+      for (const file of imageFiles) {
+        const filePath = `${Date.now()}`
+        const { error: uploadError } = await supabase.storage
+          .from("image-travel-app")
+          .upload(filePath, file)
+
+        if (uploadError) throw uploadError
+
+        const { data: publicUrlData } = supabase.storage
+          .from("image-travel-app")
+          .getPublicUrl(filePath)
+
+        imageUrls.push(publicUrlData.publicUrl)
+      }
+
+      await postService.createPost({
+        user_id: Number(formData.user_id),
+        title: formData.title,
+        content: formData.content,
+        place_id: formData.placeId,
+        stars: Number(formData.star),
+        category_id: Number(formData.categoryId),
+        image: imageUrls.join(","),
+        place_name: formData.placeName,
+        place_address: formData.placeAddress,
+      })
+
       toast({
         title: "Đăng bài thành công",
         description: "Bài viết của bạn đã được đăng thành công!",
       })
 
-      router.push("/posts")
+      router.push("/") 
     } catch (error) {
+      console.error(error)
       toast({
         title: "Đăng bài thất bại",
         description: "Có lỗi xảy ra khi đăng bài viết",
@@ -201,10 +212,6 @@ export default function CreatePostPage() {
     }
   }
 
-  const mockUser = {
-    name: "Nguyễn Văn A",
-    avatarPath: "/placeholder.svg?height=40&width=40",
-  }
 
   return (
     <div className="container max-w-3xl mx-auto py-8 px-4">
@@ -222,11 +229,11 @@ export default function CreatePostPage() {
         <CardContent className="p-6">
           <div className="flex items-center gap-3 mb-6">
             <Avatar>
-              <AvatarImage src={mockUser.avatarPath} alt={mockUser.name} />
-              <AvatarFallback>{mockUser.name.charAt(0).toUpperCase()}</AvatarFallback>
+              <AvatarImage src={user?.avatarPath} alt={user?.name} />
+              <AvatarFallback>{user?.name.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">{mockUser.name}</p>
+              <p className="font-medium">{user?.name}</p>
               <p className="text-sm text-muted-foreground">Đang chia sẻ trải nghiệm du lịch</p>
             </div>
           </div>
@@ -269,7 +276,6 @@ export default function CreatePostPage() {
                             className="flex-grow"
                             autoFocus
                           />
-                          {/* Nút tìm kiếm đã bị loại bỏ */}
                           <Button type="button" variant="ghost" onClick={() => setShowPlaceSearch(false)}>
                             <X className="h-4 w-4" />
                           </Button>
@@ -323,19 +329,25 @@ export default function CreatePostPage() {
                   <div className="flex flex-wrap gap-4">
                     <div className="w-full md:w-auto">
                       <Select
-                        value={formData.category}
-                        onValueChange={(value) => handleSelectChange("category", value)}
+                        value={formData.categoryId}
+                        onValueChange={(value) => handleSelectChange("categoryId", value)}
                       >
                         <SelectTrigger className="w-full md:w-[180px]">
                           <SelectValue placeholder="Chọn danh mục" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="beach">Biển</SelectItem>
-                          <SelectItem value="mountain">Núi</SelectItem>
-                          <SelectItem value="city">Thành phố</SelectItem>
-                          <SelectItem value="island">Đảo</SelectItem>
-                          <SelectItem value="countryside">Làng quê</SelectItem>
-                        </SelectContent>
+                        {
+                          isCategoryLoading ? (
+                            <div className="text-center py-2 text-muted-foreground text-sm">Đang tải danh mục...</div>
+                          ) : (
+                            <SelectContent>
+                              {categoryData?.map((cat) => (
+                                <SelectItem key={cat.id} value={cat.id.toString()}>
+                                  {cat.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          )
+                        }
                       </Select>
                     </div>
 
@@ -431,23 +443,12 @@ export default function CreatePostPage() {
                     averageStar: rating,
                   },
                   category: {
-                    name:
-                      formData.category === "beach"
-                        ? "Biển"
-                        : formData.category === "mountain"
-                          ? "Núi"
-                          : formData.category === "city"
-                            ? "Thành phố"
-                            : formData.category === "island"
-                              ? "Đảo"
-                              : formData.category === "countryside"
-                                ? "Làng quê"
-                                : "Chọn danh mục",
-                    slug: formData.category,
+                    name: formData.categoryId,
+                    slug: formData.categoryId,
                   },
                   author: {
-                    name: mockUser.name,
-                    avatarPath: mockUser.avatarPath,
+                    name: user?.name ?? "Tên người dùng",
+                    avatarPath: user?.avatarPath ?? "/placeholder.svg?height=40&width=40",
                   },
                   images: selectedImages,
                   createdAt: new Date().toISOString(),
