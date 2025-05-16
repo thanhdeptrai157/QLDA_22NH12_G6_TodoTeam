@@ -21,12 +21,12 @@ const login = async (req, res) => {
 
     const accessToken = jwt.sign(
       { id: user.id, email: user.email },
-      'your_secret_key',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' },
     );
     const refreshToken = jwt.sign(
       { id: user.id, email: user.email },
-      'your_refresh_secret_key',
+      process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: '7d' },
     );
     const safeUser = {
@@ -74,12 +74,12 @@ const register = async (req, res) => {
     // Tạo token JWT
     const accessToken = jwt.sign(
       { id: newUser.id, email: newUser.email },
-      'your_secret_key',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' },
     );
     const refreshToken = jwt.sign(
       { id: newUser.id, email: newUser.email },
-      'your_refresh_secret_key',
+      process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: '7d' },
     );
 
@@ -103,12 +103,12 @@ const refreshAccessToken = async (req, res) => {
 
   try {
     // Xác minh Refresh Token
-    const decoded = jwt.verify(refreshToken, 'your_refresh_secret_key');
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET,);
 
     // Tạo Access Token mới
     const accessToken = jwt.sign(
       { id: decoded.id, email: decoded.email },
-      'your_secret_key',
+      process.env.JWT_SECRET,
       { expiresIn: '1h' },
     );
 
