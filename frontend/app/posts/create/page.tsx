@@ -189,7 +189,7 @@ export default function CreatePostPage() {
         place_id: formData.placeId,
         stars: Number(formData.star),
         category_id: Number(formData.categoryId),
-        image: imageUrls.join(","),
+        images: imageUrls,
         place_name: formData.placeName,
         place_address: formData.placeAddress,
       })
@@ -445,7 +445,7 @@ export default function CreatePostPage() {
                   category: {
                     name: formData.categoryId,
                     slug: formData.categoryId,
-                  },
+                  },  
                   author: {
                     name: user?.name ?? "Tên người dùng",
                     avatarPath: user?.avatarPath ?? "/placeholder.svg?height=40&width=40",

@@ -19,6 +19,9 @@ export const POST = {
     CREATE_POST: "/posts/",
     GET_DETAIL_POST(id: number ){
         return `/posts/${id}`
+    },
+    GET_POST_BY_USER(user_id: number){
+        return `/posts/user/${user_id}`
     }
 }
 

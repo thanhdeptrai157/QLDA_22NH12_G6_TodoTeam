@@ -7,7 +7,7 @@ const authorize = (roles) => {
   
       const token = authHeader.split(' ')[1];
       try {
-        const decoded = jwt.verify(token, 'your_secret_key');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (!roles.includes(decoded.role)) {
           return res.status(403).send({ message: 'Forbidden' });
         }

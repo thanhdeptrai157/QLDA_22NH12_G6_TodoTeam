@@ -30,7 +30,7 @@ const getCategoryColor = (slug: string) => {
 
 export default async function PostPage({ params }: PostPageProps) {
   const { id } = params
-  const post = await postService.getDetailPost(Number.parseInt(id))
+  const post = await postService.getDetailPost(Number.parseInt(id)) 
   console.log(post)
   // Mock post data
  
@@ -139,23 +139,23 @@ export default async function PostPage({ params }: PostPageProps) {
             {post.image && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
                 <div className="md:col-span-2 h-80 relative">
-                  <Image src={post.image || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
+                  <Image src={post.image[0] || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
                 </div>
-                {/* {post.images.length > 1 && (
+                {post.image.length > 1 && (
                   <div className="h-40 relative">
-                    <Image src={post.images[1] || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
+                    <Image src={post.image[1] || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
                   </div>
                 )}
-                {post.images.length > 2 && (
+                {post.image.length > 2 && (
                   <div className="h-40 relative">
-                    <Image src={post.images[2] || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
-                    {post.images.length > 3 && (
+                    <Image src={post.image[2] || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
+                    {post.image.length > 3 && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="text-white text-xl font-bold">+{post.images.length - 3}</span>
+                        <span className="text-white text-xl font-bold">+{post.image.length - 3}</span>
                       </div>
                     )}
                   </div>
-                )} */}
+                )}
               </div>
             )}
 
@@ -220,14 +220,14 @@ export default async function PostPage({ params }: PostPageProps) {
               </CardContent>
             </Card>
 
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <h2 className="text-lg font-bold mb-4">Bài viết liên quan</h2>
               <div className="space-y-4">
                 {relatedPosts.map((relatedPost) => (
                   <PostCard key={relatedPost.id} post={relatedPost} layout="horizontal" />
                 ))}
               </div>
-            </div>
+            </div> */}
 
             <Card>
               <CardContent className="p-4">

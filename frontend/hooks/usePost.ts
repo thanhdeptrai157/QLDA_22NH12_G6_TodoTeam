@@ -41,12 +41,30 @@ export const usePost = () => {
             setIsLoading(false);
         }
     }
+
+    const getPostByUserId = async (user_id: number) => {
+        setIsLoading(true);
+        setError("");
+        setMessage("");
+
+        try {
+            const response = await postService.getAllUserPosts(user_id);
+            return response;
+        }
+        catch(err: any){
+            setError("Có lỗi xảy ra khi lấy bài viết.");
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    }
     return{
         isLoading,
         error,
         message,
         createPost,
-        getDetailPost
+        getDetailPost,
+        getPostByUserId
     }
 }
 
