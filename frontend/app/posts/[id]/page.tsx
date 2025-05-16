@@ -9,6 +9,7 @@ import { CommentSection } from "@/components/comment-section"
 import Link from "next/link"
 import Image from "next/image"
 import { MapPin, ThumbsUp, MessageSquare, Share2, Bookmark, Flag, ChevronLeft } from "lucide-react"
+import { postService } from "@/service/post-service"
 
 interface PostPageProps {
   params: {
@@ -18,58 +19,21 @@ interface PostPageProps {
 
 const getCategoryColor = (slug: string) => {
   const colors: Record<string, string> = {
-    beach: "bg-blue-500",
-    mountain: "bg-green-500",
-    city: "bg-purple-500",
-    island: "bg-yellow-500",
-    countryside: "bg-amber-800",
+    1: "bg-blue-500",
+    2: "bg-green-500",
+    3: "bg-purple-500",
+    4: "bg-yellow-500",
+    5: "bg-amber-800",
   }
   return colors[slug] || "bg-primary"
 }
 
-export default function PostPage({ params }: PostPageProps) {
+export default async function PostPage({ params }: PostPageProps) {
   const { id } = params
-
+  const post = await postService.getDetailPost(Number.parseInt(id))
+  console.log(post)
   // Mock post data
-  const post = {
-    id: Number.parseInt(id),
-    title: "Khám phá vẻ đẹp hoang sơ của Vịnh Hạ Long",
-    content: `Vịnh Hạ Long là một trong những kỳ quan thiên nhiên tuyệt đẹp của Việt Nam, được UNESCO công nhận là Di sản Thiên nhiên Thế giới. Với hơn 1.600 hòn đảo đá vôi lớn nhỏ, Vịnh Hạ Long tạo nên một bức tranh thiên nhiên hùng vĩ và độc đáo.
-
-Chuyến du lịch của tôi bắt đầu từ cảng Tuần Châu, nơi chúng tôi lên thuyền để bắt đầu hành trình khám phá vịnh. Thời tiết hôm đó thật đẹp, bầu trời xanh trong với những đám mây trắng bồng bềnh, tạo nên khung cảnh tuyệt vời cho chuyến đi.
-
-Điểm đến đầu tiên của chúng tôi là hang Sửng Sốt, một trong những hang động đẹp nhất vịnh Hạ Long. Bước vào hang, tôi thực sự bị choáng ngợp bởi vẻ đẹp của các khối thạch nhũ với nhiều hình thù kỳ lạ được tạo thành qua hàng triệu năm.
-
-Sau đó, chúng tôi tiếp tục hành trình đến đảo Ti Tốp, nơi có bãi biển nhỏ xinh với làn nước trong xanh. Từ đỉnh đảo, tôi có thể ngắm nhìn toàn cảnh vịnh Hạ Long với những hòn đảo đá vôi nhấp nhô trên mặt nước, tạo nên một khung cảnh tuyệt đẹp không thể nào quên.
-
-Buổi tối trên thuyền là một trải nghiệm đáng nhớ khác. Chúng tôi thưởng thức bữa tối với các món hải sản tươi ngon, sau đó tham gia hoạt động câu mực đêm. Đứng trên boong thuyền, ngắm nhìn bầu trời đầy sao và lắng nghe tiếng sóng vỗ nhẹ vào thân thuyền, tôi cảm thấy thật bình yên và thư thái.
-
-Vịnh Hạ Long thực sự là một điểm đến tuyệt vời, nơi bạn có thể hòa mình vào thiên nhiên và tận hưởng những khoảnh khắc yên bình. Nếu bạn chưa từng đến Vịnh Hạ Long, hãy đưa nó vào danh sách những nơi phải đến trong đời của mình!`,
-    likes: 245,
-    createdAt: "2025-03-15",
-    updatedAt: "2025-03-15",
-    status: true,
-    author: {
-      id: 1,
-      name: "Nguyễn Văn A",
-      avatarPath: "/placeholder.svg?height=40&width=40",
-    },
-    place: {
-      id: 1,
-      name: "Vịnh Hạ Long",
-      address: "Quảng Ninh, Việt Nam",
-      averageStar: 4.8,
-    },
-    category: {
-      name: "Biển",
-      slug: "beach",
-    },
-    images: [
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-      "/placeholder.svg?height=600&width=800",
-    ],
-  }
+ 
 
   // Mock related posts
   const relatedPosts = [
@@ -142,42 +106,42 @@ Vịnh Hạ Long thực sự là một điểm đến tuyệt vời, nơi bạn 
             <div className="p-6 border-b">
               <div className="flex items-center gap-3 mb-4">
                 <Avatar>
-                  <AvatarImage src={post.author.avatarPath} alt={post.author.name} />
-                  <AvatarFallback>{post.author.name.charAt(0).toUpperCase()}</AvatarFallback>
+                  {/* <AvatarImage src={post?.user?.avatarPath} alt={post.author.name} /> */}
+                  <AvatarFallback>{post?.user?.name.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{post.author.name}</p>
+                  <p className="font-medium">{post?.user?.name}</p>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{formatDate(post.createdAt)}</span>
+                    <span>{formatDate(post?.created_at)}</span>
                     <span>•</span>
-                    <Badge className={`${getCategoryColor(post.category.slug)} hover:opacity-90`}>
+                    <Badge className={`${getCategoryColor(post.category.id)} hover:opacity-90`}>
                       {post.category.name}
                     </Badge>
                   </div>
                 </div>
               </div>
 
-              <h1 className="text-2xl md:text-3xl font-bold mb-4">{post.title}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold mb-4">{post?.title}</h1>
 
               <div className="flex items-start gap-2 mb-4">
                 <MapPin className="h-5 w-5 text-primary mt-1" />
                 <div>
-                  <p className="font-medium">{post.place.name}</p>
-                  <p className="text-muted-foreground">{post.place.address}</p>
+                  <p className="font-medium">{post?.place?.name}</p>
+                  <p className="text-muted-foreground">{post?.place?.address}</p>
                   <div className="mt-1">
-                    <StarRating rating={post.place.averageStar} size="md" />
+                    <StarRating rating={post?.stars} size="md" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Post Images */}
-            {post.images && post.images.length > 0 && (
+            {post.image && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
                 <div className="md:col-span-2 h-80 relative">
-                  <Image src={post.images[0] || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
+                  <Image src={post.image || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
                 </div>
-                {post.images.length > 1 && (
+                {/* {post.images.length > 1 && (
                   <div className="h-40 relative">
                     <Image src={post.images[1] || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
                   </div>
@@ -191,7 +155,7 @@ Vịnh Hạ Long thực sự là một điểm đến tuyệt vời, nơi bạn 
                       </div>
                     )}
                   </div>
-                )}
+                )} */}
               </div>
             )}
 

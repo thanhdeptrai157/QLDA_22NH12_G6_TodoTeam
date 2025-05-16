@@ -1,5 +1,5 @@
 import { postService } from "@/service/post-service";
-import { Post } from "@/types/post";
+import { CreatePostPayload, Post } from "@/types/post";
 import { useState } from "react";
 
 export const usePost = () => {
@@ -7,7 +7,7 @@ export const usePost = () => {
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
 
-    const createPost = async (data: Post) => {
+    const createPost = async (data: CreatePostPayload) => {
         setIsLoading(true);
         setError("");
         setMessage("");
@@ -22,13 +22,31 @@ export const usePost = () => {
         } finally {
             setIsLoading(false);
         }
+    
     };
 
+    const getDetailPost = async (id: number) => {
+        setIsLoading(true);
+        setError("");
+        setMessage("");
+
+        try {
+            const response = await postService.getDetailPost(id);
+            
+            return response;
+        } catch (err: any) {
+            setError("Có lỗi xảy ra khi tạo bài viết.");
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    }
     return{
         isLoading,
         error,
         message,
         createPost,
+        getDetailPost
     }
 }
 
