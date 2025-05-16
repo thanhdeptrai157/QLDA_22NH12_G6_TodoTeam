@@ -13,4 +13,8 @@ router.get('/:id', postController.getPostById);
 
 router.get('/get_by_place_id/:place_id', postController.getPostByIdPlace);
 router.put('/:id', postController.updatePost);
+
+router.get('/user/:user_id', postController.getPostByIdUser);
+
+
 module.exports = router;
