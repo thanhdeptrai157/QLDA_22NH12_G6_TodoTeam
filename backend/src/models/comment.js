@@ -13,5 +13,4 @@ const Comment = sequelize.define('comment', {
     timestamps: false
 });
 
-Comment.sync();
 module.exports = Comment

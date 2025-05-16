@@ -1,7 +1,6 @@
 // services/search.service.js
 const { Op } = require('sequelize');
-const Post = require('../models/post');
-const Place = require('../models/place');
+const { Post, Place } = require('../models');
 
 exports.findByLocation = async (locationName) => {
     const places = await Place.findAll({ 

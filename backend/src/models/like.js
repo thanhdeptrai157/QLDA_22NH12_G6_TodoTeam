@@ -11,5 +11,4 @@ const Like = sequelize.define('like', {
     tableName: 'like', 
     timestamps: false
 });
-Like.sync();
 module.exports = Like;
