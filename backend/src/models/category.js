@@ -7,5 +7,4 @@ const Category = sequelize.define('category', {
     tableName: 'category',
     timestamps: false
 });
-Category.sync()
 module.exports = Category

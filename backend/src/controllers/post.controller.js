@@ -11,6 +11,7 @@ const getAllPosts = async (req, res) => {
 
 const createPost = async (req, res) => {
     try {
+        console.log(req.body)
         const newPost = await postService.createPost(req.body);
         res.status(201).json({ message: 'Post created successfully', post: newPost });
     } catch (error) {
@@ -43,11 +44,20 @@ const updatePost = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+const getPostByIdUser = async (req, res) => {
+    try {
+        const post = await postService.getPostByIdUser(req.params.user_id);
+        res.status(200).json(post);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
 
 module.exports = {
-    getAllPosts,
-    createPost,
-    getPostById,
-    getPostByIdPlace,
-    updatePost
+  getAllPosts,
+  createPost,
+  getPostById,
+getPostByIdPlace,
+    updatePost,
+    getPostByIdUser
 };
