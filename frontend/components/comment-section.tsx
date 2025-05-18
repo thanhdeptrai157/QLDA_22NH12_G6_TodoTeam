@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect  } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ThumbsUp, Reply, MoreHorizontal } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { formatDate } from "@/lib/utils"
-
+import { useAuthStore } from "@/store/user"
+import { useRouter, useSearchParams } from "next/navigation"
+import { commentService } from "@/service/comment-service"
+import { useComment } from "@/hooks/useComment"
 interface CommentSectionProps {
   postId: number
 }
@@ -15,85 +18,78 @@ interface CommentSectionProps {
 interface Comment {
   id: number
   content: string
-  createdAt: string
+  created_at: string
   likes: number
-  author: {
+  user: {
     id: number
     name: string
-    avatarPath: string
+    avatar_path: string
   }
   replies?: Comment[]
 }
 
 export function CommentSection({ postId }: CommentSectionProps) {
+  const user = useAuthStore((state) => state.user)
+  const router = useRouter()
+  const { isLoading, error, getComments} = useComment()
+    // Redirect if not logged in
+    useEffect(() => {
+      if (!user) {
+        router.push("/auth/login")
+      }
+    }, [user])
   const [commentText, setCommentText] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Mock comments data
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: 1,
-      content:
-        "Vịnh Hạ Long thực sự là một kỳ quan thiên nhiên tuyệt vời! Tôi đã có cơ hội đến đó vào năm ngoái và trải nghiệm thật khó quên.",
-      createdAt: "2025-03-16T10:30:00",
-      likes: 12,
-      author: {
-        id: 2,
-        name: "Trần Thị B",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      replies: [
-        {
-          id: 3,
-          content:
-            "Bạn đã thử hoạt động chèo thuyền kayak chưa? Đó là trải nghiệm tuyệt vời nhất của tôi ở Vịnh Hạ Long.",
-          createdAt: "2025-03-16T11:15:00",
-          likes: 5,
-          author: {
-            id: 4,
-            name: "Hoàng Văn D",
-            avatarPath: "/placeholder.svg?height=40&width=40",
-          },
-        },
-      ],
-    },
-    {
-      id: 2,
-      content:
-        "Bài viết rất hay và chi tiết. Tôi đang lên kế hoạch cho chuyến đi tới Vịnh Hạ Long vào tháng tới, bạn có thể chia sẻ thêm về chi phí và thời điểm tốt nhất để đi không?",
-      createdAt: "2025-03-17T09:45:00",
-      likes: 8,
-      author: {
-        id: 3,
-        name: "Lê Văn C",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-    },
-  ])
+  const [comments, setComments] = useState<Comment[]>(
 
-  const handleCommentSubmit = () => {
+  )
+  console.log(postId)
+useEffect(() => {
+  const fetchComments = async () => {
+    try {
+      const comments = await getComments(postId)
+      console.log(comments)
+      setComments(comments)
+    } catch (err) {
+      console.error("Error fetching user posts:", err)
+    }
+  }
+
+  fetchComments()
+}, [postId]) // 👈 fix quan trọng
+
+
+  const handleCommentSubmit = async () => {
     if (!commentText.trim()) return
 
     setIsSubmitting(true)
 
     // Simulate API call
-    setTimeout(() => {
-      const newComment: Comment = {
-        id: Date.now(),
+    
+    const newComment: Comment = await commentService.createComment(
+      {
+        user_id: Number(user?.id),
+        post_id: postId,
         content: commentText,
-        createdAt: new Date().toISOString(),
-        likes: 0,
-        author: {
-          id: 1,
-          name: "Nguyễn Văn A",
-          avatarPath: "/placeholder.svg?height=40&width=40",
-        },
       }
-
+    )
+    //   Comment = {
+    //   id: Date.now(),
+    //   content: commentText,
+    //   createdAt: new Date().toISOString(),
+    //   likes: 0,
+    //   author: {
+    //     id: 1,
+    //     name: "Nguyễn Văn A",
+    //     avatarPath: "/placeholder.svg?height=40&width=40",
+    //   }
+    // }
       setComments([...comments, newComment])
       setCommentText("")
       setIsSubmitting(false)
-    }, 1000)
+    
   }
 
   const handleLike = (commentId: number) => {
@@ -150,13 +146,13 @@ export function CommentSection({ postId }: CommentSectionProps) {
           <div key={comment.id} className="border-b pb-4">
             <div className="flex gap-3">
               <Avatar>
-                <AvatarImage src={comment.author.avatarPath} alt={comment.author.name} />
-                <AvatarFallback>{comment.author.name.charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarImage src={comment.user?.avatar_path} alt={comment.user.name} />
+                <AvatarFallback>{comment.user.name.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="flex-grow">
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex justify-between items-start">
-                    <h4 className="font-medium">{comment.author.name}</h4>
+                    <h4 className="font-medium">{comment.user.name}</h4>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -169,7 +165,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
                     </DropdownMenu>
                   </div>
                   <p className="my-2">{comment.content}</p>
-                  <div className="text-xs text-muted-foreground">{formatDate(comment.createdAt)}</div>
+                  <div className="text-xs text-muted-foreground">{formatDate(comment.created_at)}</div>
                 </div>
                 <div className="flex gap-4 mt-2">
                   <button
@@ -191,13 +187,13 @@ export function CommentSection({ postId }: CommentSectionProps) {
                     {comment.replies.map((reply) => (
                       <div key={reply.id} className="flex gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={reply.author.avatarPath} alt={reply.author.name} />
-                          <AvatarFallback>{reply.author.name.charAt(0).toUpperCase()}</AvatarFallback>
+                          <AvatarImage src={reply.user?.avatar_path} alt={reply.user.name} />
+                          <AvatarFallback>{reply.user.name.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div className="flex-grow">
                           <div className="bg-muted rounded-lg p-3">
                             <div className="flex justify-between items-start">
-                              <h4 className="font-medium">{reply.author.name}</h4>
+                              <h4 className="font-medium">{reply.user.name}</h4>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -210,7 +206,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
                               </DropdownMenu>
                             </div>
                             <p className="my-2">{reply.content}</p>
-                            <div className="text-xs text-muted-foreground">{formatDate(reply.createdAt)}</div>
+                            <div className="text-xs text-muted-foreground">{formatDate(reply.created_at)}</div>
                           </div>
                           <div className="flex gap-4 mt-2">
                             <button
