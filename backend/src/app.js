@@ -13,8 +13,8 @@ const authRoutes = require('./routes/auth.routes');
 const categoryRoutes = require('./routes/category.routers')
 const postRoutes = require('./routes/post.routes')
 const placeRoutes = require('./routes/place.routers')
-const searchRoutes = require('./routes/search.routes')
-
+const searchRoutes = require('./routes/search.routes');
+const commentRoutes = require('./routes/comment.routes');
 
 // Routes
 app.use('/auth', authRoutes);
@@ -22,7 +22,7 @@ app.use('/posts', postRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/places', placeRoutes);
 app.use('/search', searchRoutes);
-
+app.use('/comments', commentRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
