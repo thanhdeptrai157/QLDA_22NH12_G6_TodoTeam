@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect  } from "react"
+import { useState, useEffect } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,54 +11,33 @@ import { useAuthStore } from "@/store/user"
 import { useRouter, useSearchParams } from "next/navigation"
 import { commentService } from "@/service/comment-service"
 import { useComment } from "@/hooks/useComment"
+import { Comment } from "@/types/comment"
 interface CommentSectionProps {
   postId: number
-}
-
-interface Comment {
-  id: number
-  content: string
-  created_at: string
-  likes: number
-  user: {
-    id: number
-    name: string
-    avatar_path: string
-  }
-  replies?: Comment[]
 }
 
 export function CommentSection({ postId }: CommentSectionProps) {
   const user = useAuthStore((state) => state.user)
   const router = useRouter()
-  const { isLoading, error, getComments} = useComment()
-    // Redirect if not logged in
-    useEffect(() => {
-      if (!user) {
-        router.push("/auth/login")
-      }
-    }, [user])
+  const { isLoading, error, getComments } = useComment()
+
   const [commentText, setCommentText] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Mock comments data
-  const [comments, setComments] = useState<Comment[]>(
-
-  )
-  console.log(postId)
-useEffect(() => {
-  const fetchComments = async () => {
-    try {
-      const comments = await getComments(postId)
-      console.log(comments)
-      setComments(comments)
-    } catch (err) {
-      console.error("Error fetching user posts:", err)
+  const [comments, setComments] = useState<Comment[]>([])
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const comments = await getComments(postId)
+        console.log(comments)
+        setComments(comments)
+      } catch (err) {
+        console.error("Error fetching user posts:", err)
+      }
     }
-  }
 
-  fetchComments()
-}, [postId]) // 👈 fix quan trọng
+    fetchComments()
+  }, [postId]) 
 
 
   const handleCommentSubmit = async () => {
@@ -67,14 +46,16 @@ useEffect(() => {
     setIsSubmitting(true)
 
     // Simulate API call
-    
-    const newComment: Comment = await commentService.createComment(
+
+    const response = await commentService.createComment(
       {
         user_id: Number(user?.id),
         post_id: postId,
         content: commentText,
       }
     )
+    const newComment = response.comment
+
     //   Comment = {
     //   id: Date.now(),
     //   content: commentText,
@@ -86,31 +67,18 @@ useEffect(() => {
     //     avatarPath: "/placeholder.svg?height=40&width=40",
     //   }
     // }
-      setComments([...comments, newComment])
-      setCommentText("")
-      setIsSubmitting(false)
-    
+    setComments([...comments!, newComment])
+    setCommentText("")
+    setIsSubmitting(false)
+
   }
 
   const handleLike = (commentId: number) => {
     setComments(
-      comments.map((comment) => {
+      comments!.map((comment) => {
         if (comment.id === commentId) {
           return { ...comment, likes: comment.likes + 1 }
         }
-
-        if (comment.replies) {
-          return {
-            ...comment,
-            replies: comment.replies.map((reply) => {
-              if (reply.id === commentId) {
-                return { ...reply, likes: reply.likes + 1 }
-              }
-              return reply
-            }),
-          }
-        }
-
         return comment
       }),
     )
@@ -119,7 +87,7 @@ useEffect(() => {
   return (
     <div className="mt-6">
       <h3 className="text-xl font-bold mb-4">
-        Bình luận ({comments.reduce((count, comment) => count + 1 + (comment.replies?.length || 0), 0)})
+        Bình luận ({comments.length})
       </h3>
 
       <div className="flex gap-3 mb-6">
@@ -142,17 +110,17 @@ useEffect(() => {
       </div>
 
       <div className="space-y-6">
-        {comments.map((comment) => (
+        {comments!.map((comment) => (
           <div key={comment.id} className="border-b pb-4">
             <div className="flex gap-3">
               <Avatar>
-                <AvatarImage src={comment.user?.avatar_path} alt={comment.user.name} />
-                <AvatarFallback>{comment.user.name.charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarImage src={comment.user?.avatar_path} alt={comment?.user?.name} />
+                <AvatarFallback>{comment?.user?.name.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="flex-grow">
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex justify-between items-start">
-                    <h4 className="font-medium">{comment.user.name}</h4>
+                    <h4 className="font-medium">{comment?.user?.name}</h4>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -165,7 +133,7 @@ useEffect(() => {
                     </DropdownMenu>
                   </div>
                   <p className="my-2">{comment.content}</p>
-                  <div className="text-xs text-muted-foreground">{formatDate(comment.created_at)}</div>
+                  <div className="text-xs text-muted-foreground">{formatDate(comment?.created_at)}</div>
                 </div>
                 <div className="flex gap-4 mt-2">
                   <button
@@ -182,7 +150,7 @@ useEffect(() => {
                 </div>
 
                 {/* Replies */}
-                {comment.replies && comment.replies.length > 0 && (
+                {/* {comment.replies && comment.replies.length > 0 && (
                   <div className="ml-6 mt-4 space-y-4">
                     {comment.replies.map((reply) => (
                       <div key={reply.id} className="flex gap-3">
@@ -225,7 +193,7 @@ useEffect(() => {
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </div>

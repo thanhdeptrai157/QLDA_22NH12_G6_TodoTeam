@@ -18,4 +18,5 @@ const getCommentsByPostId = async (req, res) => {
 };
 module.exports = {
     createComment,
-};
+    getCommentsByPostId
+}

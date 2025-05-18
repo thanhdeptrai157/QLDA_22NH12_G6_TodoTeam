@@ -40,14 +40,18 @@ const createComment = async (data) => {
   
 }
 const getCommentsByPostId = async (post_id) => {
-    // Validate the data
     const comments = await Comment.findAll({
         where: {
             post_id: post_id
-        }
+        },
+        include: [{
+            model: User,
+            attributes: ['id', 'name', 'avatar_path'] 
+        }]
     });
     return comments;
-}
+};
+
 module.exports = {
   createComment,
   getCommentsByPostId

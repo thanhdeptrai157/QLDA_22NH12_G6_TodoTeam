@@ -32,6 +32,6 @@ export const CATEGORY = {
 export const COMMENT = {
     CREATE_COMMENT: "/comments/",
     GET_COMMENTS_BY_POST(post_id: number){
-        return `/comments/post/${post_id}`
+        return `/comments/${post_id}`
     }
 }
