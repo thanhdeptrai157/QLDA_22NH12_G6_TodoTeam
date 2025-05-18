@@ -54,6 +54,7 @@ const getPostByIdPlace = async (place_id) => {
             { model: Place, attributes: ['id', 'name', 'address'] }
         ]
     });
+    
 
     if (!post) {
         throw new Error('Post not found');
