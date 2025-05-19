@@ -4,7 +4,6 @@ import { CATEGORY } from "@/constants/api-endpoint";
 export const getAllCategories = async () => {
     try {
         const response = await api.get(CATEGORY.GET_CATEGORY);
-        console.log("Categories fetched successfully:", response);
         return response.data;
     } catch (error) {
         console.error("Error fetching categories:", error);
@@ -12,6 +11,16 @@ export const getAllCategories = async () => {
     }
 }
 
+export const getAllPostsByCategory = async () => {
+    try {
+        const response = await api.get(CATEGORY.GET_ALL_NUM_POST_BY_CATEGORY);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching posts by category:", error);
+        throw error;
+    }
+}
 export const categoryService = {
     getAllCategories,
+    getAllPostsByCategory,
 };

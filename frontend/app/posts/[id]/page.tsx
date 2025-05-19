@@ -33,7 +33,7 @@ export default async function PostPage({ params }: PostPageProps) {
   const post = await postService.getDetailPost(Number.parseInt(id)) 
   console.log(post)
   // Mock post data
- 
+  console.log(post.id)
 
   // Mock related posts
   const relatedPosts = [
@@ -162,7 +162,7 @@ export default async function PostPage({ params }: PostPageProps) {
             {/* Post Content */}
             <div className="p-6">
               <div className="prose max-w-none">
-                {post.content.split("\n\n").map((paragraph, index) => (
+                {post.content.split("\n\n").map((paragraph: any, index: any) => (
                   <p key={index} className="mb-4">
                     {paragraph}
                   </p>

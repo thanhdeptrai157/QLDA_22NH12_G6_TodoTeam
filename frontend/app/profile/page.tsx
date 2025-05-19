@@ -28,8 +28,8 @@ import { usePost } from "@/hooks/usePost"
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("posts")
   const [userPosts, setUserPosts] = useState<Post[]>([])
-  const {user }= useAuthStore()
-  const { isLoading, error, getPostByUserId} = usePost()
+  const { user } = useAuthStore()
+  const { isLoading, error, getPostByUserId } = usePost()
 
 
   useEffect(() => {
@@ -47,6 +47,7 @@ export default function ProfilePage() {
 
     fetchPosts()
   }, [user?.id])
+  console.log(isLoading)
   return (
     <div className="min-h-screen bg-muted/30 dark:bg-background">
       {/* Cover Photo */}
@@ -171,21 +172,35 @@ export default function ProfilePage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="posts" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {userPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-            </div>
-            {userPosts.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">Bạn chưa có bài viết nào</p>
-                <Button asChild>
-                  <Link href="/posts/create">Tạo bài viết đầu tiên</Link>
-                </Button>
+          {!isLoading ? (
+            <TabsContent value="posts" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {userPosts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
               </div>
-            )}
-          </TabsContent>
+              {userPosts.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground mb-4">Bạn chưa có bài viết nào</p>
+                  <Button asChild>
+                    <Link href="/posts/create">Tạo bài viết đầu tiên</Link>
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+          ) : (
+            <TabsContent value="posts" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[...Array(4)].map((_, index) => (
+                  <div key={index} className="space-y-4 p-4 border rounded-lg shadow">
+                    <div className="h-40 bg-gray-200 rounded-md animate-pulse" />
+                    <div className="h-6 bg-gray-200 rounded-md w-3/4 animate-pulse" />
+                    <div className="h-4 bg-gray-200 rounded-md w-1/2 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+          )}
 
           {/* <TabsContent value="photos" className="mt-6">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

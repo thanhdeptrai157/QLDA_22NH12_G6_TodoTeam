@@ -1,8 +1,10 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { PostCard } from "@/components/post-card"
 import { SearchBar } from "@/components/search-bar"
 import { MapPin } from "lucide-react"
+import { useCategoryWithPostCount } from "@/hooks/useCategory"
 
 interface CategoryPageProps {
   params: {
@@ -33,20 +35,13 @@ const getCategoryHoverClass = (slug: string) => {
   return colors[slug] || "hover:bg-primary/10"
 }
 
-export default function CategoryPage({ params }: CategoryPageProps) {
-  const { slug } = params
-
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  const { slug } = await params
+  console.log(slug)
   // Mock data for categories
-  const categories = [
-    { name: "Biển", slug: "beach", count: 120, color: "beach" },
-    { name: "Núi", slug: "mountain", count: 85, color: "mountain" },
-    { name: "Thành phố", slug: "city", count: 150, color: "city" },
-    { name: "Đảo", slug: "island", count: 65, color: "island" },
-    { name: "Làng quê", slug: "countryside", count: 40, color: "countryside" },
-  ]
-
+  const { categories: popularCategories, isLoading: isCategoryLoading } = useCategoryWithPostCount();
   // Find current category
-  const currentCategory = categories.find((cat) => cat.slug === slug) || {
+  const currentCategory = popularCategories.find((cat) => cat.slug === slug) || {
     name: "Không tìm thấy",
     slug: "not-found",
     count: 0,
@@ -184,7 +179,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           <div className="sticky top-20">
             <h2 className="text-xl font-bold mb-4">Danh mục</h2>
             <div className="space-y-2">
-              {categories.map((category) => (
+              {popularCategories.map((category) => (
                 <Link
                   key={category.slug}
                   href={`/categories/${category.slug}`}

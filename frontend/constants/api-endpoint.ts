@@ -1,4 +1,3 @@
-
 export const AUTH = {
     LOGIN: "/auth/login/",
     LOGOUT: "/auth/logout/",
@@ -22,11 +21,18 @@ export const POST = {
     },
     GET_POST_BY_USER(user_id: number){
         return `/posts/user/${user_id}`
-    }
+    },
+    GET_TOP_POSTS_BY_LIKES(limit?: number) {
+        return `/posts/top/likes${limit ? `?limit=${limit}` : ''}`;
+    },
+    GET_NEWEST_POSTS(limit?: number) {
+        return `/posts/top/newest${limit ? `?limit=${limit}` : ''}`;
+    },
 }
 
 export const CATEGORY = {
     GET_CATEGORY: "/categories/",
+    GET_ALL_NUM_POST_BY_CATEGORY: `/categories/with-post-count/`
 }
 
 export const COMMENT = {

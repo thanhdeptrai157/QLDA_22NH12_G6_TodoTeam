@@ -53,11 +53,34 @@ const getPostByIdUser = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
+
+const getTopPostsByLikes = async (req, res) => {
+    try {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 5;
+        const posts = await postService.getTopPostsByLikes(limit);
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getNewestPosts = async (req, res) => {
+    try {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 5;
+        const posts = await postService.getNewestPosts(limit);
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getAllPosts,
     createPost,
     getPostById,
     getPostByIdPlace,
     updatePost,
-    getPostByIdUser
+    getPostByIdUser,
+    getTopPostsByLikes,
+    getNewestPosts
 };
