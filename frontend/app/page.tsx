@@ -7,146 +7,32 @@ import { SearchBar } from "@/components/search-bar"
 import { CategoryHighlight } from "@/components/category-highlight"
 import { HeroSection } from "@/components/hero-section"
 import { useAuthStore } from "@/store/user"
+import { useCategoryWithPostCount } from "@/hooks/useCategory"
+import { usePost } from "@/hooks/usePost";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   // Mock data for featured posts
-  const {user} = useAuthStore()
-  const featuredPosts = [
-    {
-      id: 1,
-      title: "Khám phá vẻ đẹp hoang sơ của Vịnh Hạ Long",
-      content: "Trải nghiệm tuyệt vời với những hòn đảo đá vôi và hang động kỳ thú...",
-      likes: 245,
-      createdAt: "2025-03-15",
-      updatedAt: "2025-03-15",
-      status: true,
-      author: {
-        id: 1,
-        name: "Nguyễn Văn A",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 1,
-        name: "Vịnh Hạ Long",
-        address: "Quảng Ninh, Việt Nam",
-        averageStar: 4.8,
-      },
-      category: {
-        name: "Biển",
-        slug: "beach",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-    {
-      id: 2,
-      title: "Sapa - Thiên đường mây trắng",
-      content: "Những trải nghiệm không thể quên với ruộng bậc thang và văn hóa dân tộc...",
-      likes: 189,
-      createdAt: "2025-03-10",
-      updatedAt: "2025-03-10",
-      status: true,
-      author: {
-        id: 2,
-        name: "Trần Thị B",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 2,
-        name: "Sapa",
-        address: "Lào Cai, Việt Nam",
-        averageStar: 4.6,
-      },
-      category: {
-        name: "Núi",
-        slug: "mountain",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-    {
-      id: 3,
-      title: "Phố cổ Hội An - Nơi thời gian ngừng lại",
-      content: "Khám phá nét đẹp cổ kính và yên bình của phố cổ Hội An...",
-      likes: 320,
-      createdAt: "2025-03-05",
-      updatedAt: "2025-03-05",
-      status: true,
-      author: {
-        id: 3,
-        name: "Lê Văn C",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 3,
-        name: "Phố cổ Hội An",
-        address: "Quảng Nam, Việt Nam",
-        averageStar: 4.9,
-      },
-      category: {
-        name: "Thành phố",
-        slug: "city",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-    {
-      id: 4,
-      title: "Phú Quốc - Thiên đường biển đảo",
-      content: "Khám phá bãi biển cát trắng và nước biển trong xanh tại Phú Quốc...",
-      likes: 278,
-      createdAt: "2025-03-02",
-      updatedAt: "2025-03-02",
-      status: true,
-      author: {
-        id: 4,
-        name: "Hoàng Thị D",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 4,
-        name: "Phú Quốc",
-        address: "Kiên Giang, Việt Nam",
-        averageStar: 4.7,
-      },
-      category: {
-        name: "Đảo",
-        slug: "island",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-    {
-      id: 5,
-      title: "Làng cổ Đường Lâm - Về với cội nguồn",
-      content: "Trải nghiệm cuộc sống làng quê yên bình tại làng cổ Đường Lâm...",
-      likes: 156,
-      createdAt: "2025-02-28",
-      updatedAt: "2025-02-28",
-      status: true,
-      author: {
-        id: 5,
-        name: "Phạm Văn E",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 5,
-        name: "Làng cổ Đường Lâm",
-        address: "Hà Nội, Việt Nam",
-        averageStar: 4.5,
-      },
-      category: {
-        name: "Làng quê",
-        slug: "countryside",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-  ]
+  const { user } = useAuthStore();
+  const { categories: popularCategories, isLoading: isCategoryLoading } = useCategoryWithPostCount();
+  const { getTopPostsByLikes, getNewestPosts } = usePost();
+  const [featuredPosts, setFeaturedPosts] = useState<any[]>([]);
+  const [newestPosts, setNewestPosts] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchTopPosts = async () => {
+      const posts = await getTopPostsByLikes(3);
+      setFeaturedPosts(posts || []);
+    };
+    fetchTopPosts();
+  }, []);
 
-  // Mock data for popular categories
-  const popularCategories = [
-    { name: "Biển", slug: "beach", count: 120, color: "beach" },
-    { name: "Núi", slug: "mountain", count: 85, color: "mountain" },
-    { name: "Thành phố", slug: "city", count: 150, color: "city" },
-    { name: "Đảo", slug: "island", count: 65, color: "island" },
-    { name: "Làng quê", slug: "countryside", count: 40, color: "countryside" },
-  ]
+  useEffect(() => {
+    const fetchNewestPosts = async () => {
+      const posts = await getNewestPosts(4);
+      setNewestPosts(posts || []);
+    };
+    fetchNewestPosts();
+  }, []);
 
   return (
     <div>
@@ -173,9 +59,21 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {popularCategories.map((category) => (
-              <CategoryHighlight key={category.slug} category={category} />
-            ))}
+            {isCategoryLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-32 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse flex flex-col items-center justify-center gap-2"
+                >
+                  <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 mb-2" />
+                  <div className="w-20 h-4 rounded bg-gray-300 dark:bg-gray-600" />
+                </div>
+              ))
+            ) : (
+              popularCategories?.map((category) => (
+                <CategoryHighlight key={category.id || category.slug} category={category} />
+              ))
+            )}
           </div>
         </section>
 
@@ -188,9 +86,26 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredPosts.slice(0, 3).map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
+            {featuredPosts.length === 0 ? (
+              Array.from({ length: 3 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-64 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse flex flex-col p-4 gap-4"
+                >
+                  <div className="h-32 w-full rounded-lg bg-gray-300 dark:bg-gray-600 mb-2" />
+                  <div className="h-6 w-2/3 rounded bg-gray-300 dark:bg-gray-600 mb-1" />
+                  <div className="h-4 w-1/2 rounded bg-gray-300 dark:bg-gray-600" />
+                  <div className="flex gap-2 mt-auto">
+                    <div className="h-8 w-20 rounded bg-gray-300 dark:bg-gray-600" />
+                    <div className="h-8 w-20 rounded bg-gray-300 dark:bg-gray-600" />
+                  </div>
+                </div>
+              ))
+            ) : (
+              featuredPosts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))
+            )}
           </div>
         </section>
 
@@ -203,9 +118,26 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {featuredPosts.slice(3, 5).map((post) => (
-              <PostCard key={post.id} post={post} layout="horizontal" />
-            ))}
+            {newestPosts.length === 0 ? (
+              Array.from({ length: 4 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-64 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse p-4 gap-4"
+                >
+                  <div className="h-32 w-full rounded-lg bg-gray-300 dark:bg-gray-600 mb-2" />
+                  <div className="h-6 w-2/3 rounded bg-gray-300 dark:bg-gray-600 mb-1" />
+                  <div className="h-4 w-1/2 rounded bg-gray-300 dark:bg-gray-600" />
+                  <div className="flex gap-2 mt-auto">
+                    <div className="h-8 w-20 rounded bg-gray-300 dark:bg-gray-600" />
+                    <div className="h-8 w-20 rounded bg-gray-300 dark:bg-gray-600" />
+                  </div>
+                </div>
+              ))
+            ) : (
+              newestPosts.map((post) => (
+                <PostCard key={post.id} post={post} layout="horizontal" />
+              ))
+            )}
           </div>
         </section>
 

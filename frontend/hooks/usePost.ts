@@ -58,13 +58,44 @@ export const usePost = () => {
             setIsLoading(false);
         }
     }
+
+    const getTopPostsByLikes = async (limit?: number) => {
+        setIsLoading(true);
+        setError("");
+        setMessage("");
+        try {
+            const response = await postService.getTopPostsByLikes(limit);
+            return response;
+        } catch (err: any) {
+            setError("Có lỗi xảy ra khi lấy top bài viết nhiều like nhất.");
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    const getNewestPosts = async (limit?: number) => {
+        setIsLoading(true);
+        setError("");
+        setMessage("");
+        try {
+            const response = await postService.getNewestPosts(limit);
+            return response;
+        } catch (err: any) {
+            setError("Có lỗi xảy ra khi lấy bài viết mới nhất.");
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return{
         isLoading,
         error,
         message,
         createPost,
         getDetailPost,
-        getPostByUserId
+        getPostByUserId,
+        getTopPostsByLikes,
+        getNewestPosts
     }
 }
 

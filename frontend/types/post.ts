@@ -24,6 +24,8 @@ export interface Post {
     id: number;
     name: string;
   }
+  likeCount: number;
+  commentCount: number;
 }
 
 export interface CreatePostPayload {

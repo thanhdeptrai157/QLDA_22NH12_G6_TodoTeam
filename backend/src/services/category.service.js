@@ -6,21 +6,23 @@ const getAllCategories = async () => {
 };
 const getAllCategoriesWithPostCount = async () => {
   return await Category.findAll({
-  attributes: [
-    'id',
-    'name',
-    [sequelize.fn('COUNT', sequelize.col('posts.id')), 'postCount']
-  ],
-  include: [
-    {
-      model: Post,
-      attributes: [],
-      required: false,
-    }
-  ],
-  group: ['category.id', 'category.name']
-});
+    attributes: [
+      'id',
+      'name',
+      [fn('COUNT', col('posts.id')), 'postCount']
+    ],
+    include: [
+      {
+        model: Post,
+        attributes: [],
+        required: false,
+      }
+    ],
+    group: ['category.id'],
+    order: [['id', 'ASC']]
+  });
 };
+
 module.exports = {
   getAllCategories,
   getAllCategoriesWithPostCount,
