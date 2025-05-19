@@ -4,49 +4,48 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { MapPin, Camera, Star, Users, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect, useCallback } from "react"
-
-const slides = [
-  {
-    image: "/placeholder.svg?height=600&width=1600",
-    color: "from-blue-600/40 to-purple-600/40",
-    title: "Khám phá Vịnh Hạ Long",
-    description: "Một trong những kỳ quan thiên nhiên tuyệt đẹp của Việt Nam với hơn 1.600 hòn đảo đá vôi",
-    link: "/places/1",
-  },
-  {
-    image: "/placeholder.svg?height=600&width=1600",
-    color: "from-green-600/40 to-teal-600/40",
-    title: "Chinh phục Sapa",
-    description: "Thị trấn trong sương mù với những thửa ruộng bậc thang tuyệt đẹp và văn hóa dân tộc đặc sắc",
-    link: "/places/2",
-  },
-  {
-    image: "/placeholder.svg?height=600&width=1600",
-    color: "from-orange-600/40 to-red-600/40",
-    title: "Phố cổ Hội An",
-    description: "Thành phố cổ quyến rũ với những ngôi nhà cổ, đèn lồng rực rỡ và ẩm thực đặc sắc",
-    link: "/places/3",
-  },
-]
+import { usePost } from "@/hooks/usePost"
 
 export function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
-
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length)
-  }, [])
-
-  const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
-  }, [])
+  const [slides, setSlides] = useState<any[]>([])
+  const { getTopPostsByLikes } = usePost()
 
   useEffect(() => {
+    const fetchSlides = async () => {
+      const posts = await getTopPostsByLikes(3)
+      if (posts && posts.length > 0) {
+        setSlides(
+          posts.map((post: any) => ({
+            image: post.image?.[0] || "/placeholder.svg?height=600&width=1600",
+            color: "from-blue-600/40 to-purple-600/40", 
+            title: post?.title,
+            description: post.content?.slice(0, 100) + (post.content?.length > 100 ? "..." : ""),
+            link: `/posts/${post.id}`,
+          }))
+        )
+      } else {
+        setSlides([])
+      }
+    }
+    fetchSlides()
+  }, [])
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (slides.length > 0 ? (prev + 1) % slides.length : 0))
+  }, [slides])
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (slides.length > 0 ? (prev === 0 ? slides.length - 1 : prev - 1) : 0))
+  }, [slides])
+
+  useEffect(() => {
+    if (slides.length === 0) return
     const interval = setInterval(() => {
       nextSlide()
     }, 5000)
-
     return () => clearInterval(interval)
-  }, [nextSlide])
+  }, [nextSlide, slides])
 
   return (
     <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white h-[600px] md:h-[700px]">
@@ -103,13 +102,13 @@ export function HeroSection() {
       <div className="container mx-auto px-4 py-16 md:py-24 relative z-20 h-full flex flex-col justify-center">
         <div className="max-w-3xl">
           <div className="mb-6 transition-all duration-500 transform translate-y-0 opacity-100">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
-              {slides[currentSlide].title}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+              {slides[currentSlide]?.title}
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-2xl">{slides[currentSlide].description}</p>
+            <p className="text-lg md:text-xl mb-8 text-white/90 max-w-2xl">{slides[currentSlide]?.description}</p>
             <div className="flex flex-wrap gap-4 mb-12">
               <Button size="lg" className="bg-white text-primary hover:bg-white/90" asChild>
-                <Link href={slides[currentSlide].link}>
+                <Link href={slides[currentSlide]?.link || "/"}>
                   <MapPin className="mr-2 h-5 w-5" />
                   Khám phá ngay
                 </Link>

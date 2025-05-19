@@ -21,7 +21,6 @@ const deleteLike = async (postData) => {
     is_post = is_post === 'true' ? true : false;
     user_id = parseInt(user_id);
     target_id = parseInt(target_id);
-    console.log(is_post, user_id, target_id)
     if (is_post) {
         const post = await Post.findByPk(target_id);
         post.likes -= 1;

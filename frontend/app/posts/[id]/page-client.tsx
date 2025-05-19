@@ -179,7 +179,7 @@ useEffect(() => {
                     <h3 className="font-medium">{post.place.name}</h3>
                     <p className="text-muted-foreground">{post.place.address}</p>
                     <div className="mt-1">
-                      <StarRating rating={post.place.averageStar} />
+                      <StarRating rating={post.place.average_stars} />
                     </div>
                   </div>
                   <div>

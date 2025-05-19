@@ -5,7 +5,7 @@ const getAllPosts = async () => {
         include: [
             { model: User, attributes: ['id', 'name', 'email'] },
             { model: Category, attributes: ['id', 'name'] },
-            { model: Place, attributes: ['id', 'name', 'address'] },
+            { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
             { model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
@@ -49,7 +49,7 @@ const getPostById = async (id) => {
         include: [
             { model: User, attributes: ['id', 'name', 'email'] },
             { model: Category, attributes: ['id', 'name'] },
-            { model: Place, attributes: ['id', 'name', 'address'] },
+            { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
             { model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
@@ -81,6 +81,7 @@ const getPostByIdPlace = async (place_id) => {
             }
         ]
     });
+    
 
     if (!post) {
         throw new Error('Post not found');
@@ -148,13 +149,63 @@ const updatePost = async (id, postData) => {
     }
     return post;
 }
+
+const getTopPostsByLikes = async (limit = 5) => {
+    const likeCountLiteral = '(SELECT COUNT(*) FROM "like" WHERE "like".target_id = post.id AND "like".is_post = true)';
+    const commentCountLiteral = '(SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id)';
+    return await Post.findAll({
+        attributes: {
+            include: [
+                [Post.sequelize.literal(likeCountLiteral), 'likeCount'],
+                [Post.sequelize.literal(commentCountLiteral), 'commentCount']
+            ]
+        },
+        include: [
+            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: Category, attributes: ['id', 'name'] },
+            { model: Place, attributes: ['id', 'name', 'address'] },
+            { model: Like, as: 'like', attributes: ['user_id'],
+                where: {
+                    is_post: true
+                },
+                required: false
+            }
+        ],
+        order: [
+            [Post.sequelize.literal(likeCountLiteral), 'DESC'],
+            [Post.sequelize.literal(commentCountLiteral), 'DESC']
+        ],
+        limit
+    });
+};
+
+const getNewestPosts = async (limit = 5) =>{
+    return await Post.findAll({
+        include: [
+            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: Category, attributes: ['id', 'name'] },
+            { model: Place, attributes: ['id', 'name', 'address'] },
+            { model: Like, as: 'like', attributes: ['user_id'],
+                where: {
+                    is_post: true
+                },
+                required: false
+            }
+
+        ],
+        order: [['created_at', 'DESC']],
+        limit
+    });
+}
 module.exports = {
   getAllPosts,
   createPost,
   getPostById,
   getPostByIdPlace,
   getPostByIdUser,
-  updatePost
+  updatePost,
+  getTopPostsByLikes,
+  getNewestPosts
 };
 
 

@@ -34,10 +34,30 @@ const createPost = async (data: CreatePostPayload) => {
         throw error;
     }
 }
+const getTopPostsByLikes = async (limit?: number) => {
+    try {
+        const response = await api.get(POST.GET_TOP_POSTS_BY_LIKES(limit));
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching top posts by likes:", error);
+        throw error;
+    }
+}
 
+const getNewestPosts = async (limit?: number) => {
+    try {
+        const response = await api.get(POST.GET_NEWEST_POSTS(limit));
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching newest posts:", error);
+        throw error;
+    }
+};
 
 export const postService = {
     getAllUserPosts,
     createPost,
-    getDetailPost
+    getDetailPost,
+    getTopPostsByLikes,
+    getNewestPosts
 };

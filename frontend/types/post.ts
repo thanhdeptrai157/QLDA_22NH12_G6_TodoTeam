@@ -30,6 +30,7 @@ export interface Post {
     post_id: number;
   }[];
   likedByUser: boolean;
+  commentCount?: number;
 }
 
 export interface CreatePostPayload {

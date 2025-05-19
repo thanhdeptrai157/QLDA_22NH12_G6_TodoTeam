@@ -34,7 +34,6 @@ export function CommentSection({ postId }: CommentSectionProps) {
   ...comment,
   likedByUser: Array.isArray(comment.like) && comment.like.some((like: any) => like.user_id === Number(user?.id)),
 }));
-      console.log("Updated comments:", updatedComments);
       setComments(updatedComments);
     } catch (err) {
       console.error("Error fetching user posts:", err);
