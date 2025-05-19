@@ -23,7 +23,13 @@ export interface Post {
   category: {
     id: number;
     name: string;
-  }
+  },
+  like: {
+    id: number;
+    user_id: number;
+    post_id: number;
+  }[];
+  likedByUser: boolean;
 }
 
 export interface CreatePostPayload {

@@ -13,4 +13,6 @@ export interface Comment {
     name: string
     avatar_path: string
   }
+  like?: number[]
+  likedByUser?: boolean
 }

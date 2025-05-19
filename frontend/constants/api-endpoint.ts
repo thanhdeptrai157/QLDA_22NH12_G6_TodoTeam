@@ -35,3 +35,9 @@ export const COMMENT = {
         return `/comments/${post_id}`
     }
 }
+export const LIKE = {
+    CREATE_LIKE: "/likes/",
+    DELETE_LIKE(is_post: boolean, user_id: number, target_id: number) {
+        return `/likes?is_post=${is_post}&user_id=${user_id}&target_id=${target_id}`;
+    }
+}
