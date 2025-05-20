@@ -1,4 +1,4 @@
-const { Comment,User } = require('../models');
+const { Comment,User, Like } = require('../models');
 const createComment = async (data) => {
     // Validate the data
   // const { user_id, post_id, content } = data;
@@ -47,7 +47,17 @@ const getCommentsByPostId = async (post_id) => {
         include: [{
             model: User,
             attributes: ['id', 'name', 'avatar_path'] 
-        }]
+        },
+          { 
+            model: Like,
+            as: 'like',
+            attributes: ['user_id'],
+            where: {
+                is_post: false
+            },
+            required: false
+          }
+        ]
     });
     return comments;
 };

@@ -23,9 +23,14 @@ export interface Post {
   category: {
     id: number;
     name: string;
-  }
-  likeCount: number;
-  commentCount: number;
+  },
+  like: {
+    id: number;
+    user_id: number;
+    post_id: number;
+  }[];
+  likedByUser: boolean;
+  commentCount?: number;
 }
 
 export interface CreatePostPayload {

@@ -26,6 +26,14 @@ Post.belongsTo(Place, { foreignKey: 'place_id' });
 User.hasMany(Like, { foreignKey: 'user_id' });
 Like.belongsTo(User, { foreignKey: 'user_id' });
 
+Comment.hasMany(Like, { foreignKey: 'target_id', constraints: false, scope: { is_post: false } ,as: 'like'});
+Like.belongsTo(Comment, { foreignKey: 'target_id', constraints: false, as: 'comment' });
+
+// Nếu Like cũng liên kết với Post (cho các bài viết)
+Post.hasMany(Like, { foreignKey: 'target_id', constraints: false, scope: { is_post: true }, as: 'like' });
+Like.belongsTo(Post, { foreignKey: 'target_id', constraints: false, as: 'post' });
+
+Place.hasMany(Post, { foreignKey: 'place_id' });
 sequelize.sync();
 
 module.exports = { User, Post, Comment, Like, Category, Place };

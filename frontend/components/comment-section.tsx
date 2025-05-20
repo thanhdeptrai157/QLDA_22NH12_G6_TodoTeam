@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { commentService } from "@/service/comment-service"
 import { useComment } from "@/hooks/useComment"
 import { Comment } from "@/types/comment"
+import { likeService } from "@/service/like-service"
 interface CommentSectionProps {
   postId: number
 }
@@ -25,19 +26,22 @@ export function CommentSection({ postId }: CommentSectionProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [comments, setComments] = useState<Comment[]>([])
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const comments = await getComments(postId)
-        console.log(comments)
-        setComments(comments)
-      } catch (err) {
-        console.error("Error fetching user posts:", err)
-      }
+ useEffect(() => {
+  const fetchComments = async () => {
+    try {
+      const comments = await getComments(postId);
+      const updatedComments = comments.map((comment: Comment) => ({
+  ...comment,
+  likedByUser: Array.isArray(comment.like) && comment.like.some((like: any) => like.user_id === Number(user?.id)),
+}));
+      setComments(updatedComments);
+    } catch (err) {
+      console.error("Error fetching user posts:", err);
     }
+  };
 
-    fetchComments()
-  }, [postId]) 
+  fetchComments();
+}, [postId, user]);
 
 
   const handleCommentSubmit = async () => {
@@ -74,15 +78,41 @@ export function CommentSection({ postId }: CommentSectionProps) {
   }
 
   const handleLike = (commentId: number) => {
+  if (!user) {
+    router.push("/login");
+    return;
+  }
+
+  const comment = comments!.find((comment) => comment.id === commentId);
+
+  if (!comment) return;
+
+  const hasLiked = comment.likedByUser; // Kiểm tra trạng thái like của người dùng
+
+  if (hasLiked) {
+    // Nếu đã like, thực hiện dislike
+    likeService.deleteLike({ is_post: false, user_id: Number(user?.id), target_id: commentId });
     setComments(
       comments!.map((comment) => {
         if (comment.id === commentId) {
-          return { ...comment, likes: comment.likes + 1 }
+          return { ...comment, likes: comment.likes - 1, likedByUser: false };
         }
-        return comment
-      }),
-    )
+        return comment;
+      })
+    );
+  } else {
+    // Nếu chưa like, thực hiện like
+    likeService.createLike({ is_post: false, user_id: Number(user?.id), target_id: commentId });
+    setComments(
+      comments!.map((comment) => {
+        if (comment.id === commentId) {
+          return { ...comment, likes: comment.likes + 1, likedByUser: true };
+        }
+        return comment;
+      })
+    );
   }
+};
 
   return (
     <div className="mt-6">
@@ -137,11 +167,13 @@ export function CommentSection({ postId }: CommentSectionProps) {
                 </div>
                 <div className="flex gap-4 mt-2">
                   <button
-                    className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
+                    className={`text-sm flex items-center gap-1 ${
+                      comment.likedByUser ? "text-primary" : "text-muted-foreground hover:text-primary"
+                    }`}
                     onClick={() => handleLike(comment.id)}
                   >
                     <ThumbsUp className="h-4 w-4" />
-                    <span>Thích ({comment.likes})</span>
+                    <span>{comment.likedByUser ? "Bỏ thích" : "Thích"} ({comment.likes})</span>
                   </button>
                   <button className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1">
                     <Reply className="h-4 w-4" />

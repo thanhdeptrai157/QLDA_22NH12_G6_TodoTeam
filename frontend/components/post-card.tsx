@@ -1,3 +1,5 @@
+"use client"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -7,12 +9,18 @@ import { StarRating } from "@/components/star-rating"
 import { formatDate } from "@/lib/utils"
 import { ThumbsUp, MessageSquare, Eye, Share2 } from "lucide-react"
 import { Post } from "@/types/post"
+import { likeService } from "@/service/like-service"
+import { useAuthStore } from "@/store/user"
+import { useEffect, useState } from "react"
+
 interface PostCardProps {
   post: Post
   layout?: "vertical" | "horizontal"
 }
 
 export function PostCard({ post, layout = "vertical" }: PostCardProps) {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user)
   const getCategoryColor = (id: number) => {
     const colors: Record<string, string> = {
       1: "bg-blue-500",
@@ -23,9 +31,32 @@ export function PostCard({ post, layout = "vertical" }: PostCardProps) {
     }
     return colors[id] || "bg-primary"
   }
-
   const categoryColor = getCategoryColor(post?.category_id!)
-
+  const [likes, setLikes] = useState(post.likes);
+  const [likedByUser, setLikedByUser] = useState(false);
+  
+  useEffect(() => {
+  if (Array.isArray(post.like) && user?.id) {
+    setLikedByUser(post.like.some((like: { user_id: number }) => like.user_id === Number(user.id)));
+  } else {
+    setLikedByUser(false);
+  }
+}, [post.like, user]);
+  const handleLike = (postId: number) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (likedByUser) {
+      likeService.deleteLike({ is_post: true, user_id: Number(user?.id), target_id: postId });
+      setLikes((prev) => prev - 1);
+      setLikedByUser(false);
+    } else {
+      likeService.createLike({ is_post: true, user_id: Number(user?.id), target_id: postId });
+      setLikes((prev) => prev + 1);
+      setLikedByUser(true);
+    }
+  };
   if (layout === "horizontal") {
     return (
       <Card className="overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02] flex flex-col sm:flex-row">
@@ -72,9 +103,9 @@ export function PostCard({ post, layout = "vertical" }: PostCardProps) {
               <span className="text-sm">{post?.user?.name}</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <ThumbsUp className="h-4 w-4" />
-                <span className="text-xs">{post?.likeCount}</span>
+              <div className="flex items-center gap-1 cursor-pointer" onClick={() => post.id !== undefined && handleLike(post.id)}>
+                <ThumbsUp className={`h-4 w-4 ${likedByUser ? "text-primary" : ""}`} />
+                <span className="text-xs">{likes}</span>
               </div>
               <div className="flex items-center gap-1">
                 <MessageSquare className="h-4 w-4" />
@@ -136,9 +167,9 @@ export function PostCard({ post, layout = "vertical" }: PostCardProps) {
 
         </div>
         <div className="flex items-center gap-3 text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <ThumbsUp className="h-4 w-4" />
-            <span className="text-xs">{post?.likeCount}</span>
+          <div className="flex items-center gap-1 cursor-pointer" onClick={() => post.id !== undefined && handleLike(post.id)}>
+            <ThumbsUp className={`h-4 w-4 ${likedByUser ? "text-primary" : ""}`} />
+            <span className="text-xs">{likes}</span>
           </div>
           <div className="flex items-center gap-1">
             <MessageSquare className="h-4 w-4" />
