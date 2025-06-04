@@ -197,6 +197,29 @@ const getNewestPosts = async (limit = 5) =>{
         limit
     });
 }
+const getPostByCategory = async (category_id) => {
+    const posts = await Post.findAll({
+        where: { category_id },
+        include: [
+            { model: User, attributes: ['id', 'name', 'avatar_path'] },
+            { model: Category, attributes: ['id', 'name'] },
+            { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
+            { model: Like, as: 'like', attributes: ['user_id'],
+                where: {
+                    is_post: true
+                },
+                required: false
+            }
+        ],
+        order: [['created_at', 'DESC']]
+    });
+
+    if (!posts) {
+        throw new Error('No posts found for this category');
+    }
+
+    return posts;
+};
 module.exports = {
   getAllPosts,
   createPost,
@@ -205,7 +228,8 @@ module.exports = {
   getPostByIdUser,
   updatePost,
   getTopPostsByLikes,
-  getNewestPosts
+  getNewestPosts,
+  getPostByCategory
 };
 
 

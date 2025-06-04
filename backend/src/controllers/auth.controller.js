@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const userService = require('../services/auth.service');
 const supabase = require('../config/supabase');
 const upload = require('../middlewares/upload');
-
+require('dotenv').config();
 // Đăng nhập
 const login = async (req, res) => {
   const { email, password } = req.body;

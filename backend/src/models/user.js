@@ -20,11 +20,15 @@ const User = sequelize.define(
       type: Sequelize.STRING,
       field: 'cover_path',
     },
+    is_active: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      field: 'is_active',
+    },
   },
   {
     tableName: 'user',
     timestamps: false,
   },
 );
-
 module.exports = User;

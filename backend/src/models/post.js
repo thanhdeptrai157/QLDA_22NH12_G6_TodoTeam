@@ -15,6 +15,7 @@ const Post = sequelize.define(
     created_at: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
     updated_at: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
     status: { type: Sequelize.BOOLEAN, defaultValue: true },
+    is_active: { type: Sequelize.BOOLEAN, defaultValue: true },
   },
   {
     tableName: 'post',

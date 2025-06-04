@@ -17,9 +17,6 @@ router.put('/:id', postController.updatePost);
 
 // Route to get top posts by likes
 router.get('/top/likes', postController.getTopPostsByLikes);
-
-
-router.get('/user/:user_id', postController.getPostByIdUser);
-
+router.get('/category/:category_id', postController.getByCategory);
 
 module.exports = router;

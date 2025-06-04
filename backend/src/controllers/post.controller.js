@@ -73,6 +73,15 @@ const getNewestPosts = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+const getByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.category_id;
+        const posts = await postService.getPostByCategory(categoryId);
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
 
 module.exports = {
     getAllPosts,
@@ -82,5 +91,6 @@ module.exports = {
     updatePost,
     getPostByIdUser,
     getTopPostsByLikes,
-    getNewestPosts
+    getNewestPosts,
+    getByCategory
 };
