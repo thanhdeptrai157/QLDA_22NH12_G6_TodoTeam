@@ -18,4 +18,37 @@ const authorize = (roles) => {
       }
     };
 };
-  module.exports = {authorize}
+
+function authorizeRoles(...allowedRoles) {
+  return (req, res, next) => {
+    const user = req.user; // user đã được xác thực từ middleware trước đó
+
+    if (!user || !allowedRoles.includes(user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    next();
+  };
+}
+
+function authorizeRole(...allowedRoles) {
+  return (req, res, next) => {
+    const user = req.user; // Đã được xác thực ở middleware trước (qua JWT hoặc session)
+
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!allowedRoles.includes(user.role)) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    next();
+  };
+}
+
+module.exports = {
+  authorize,
+  authorizeRoles,
+  authorizeRole
+}

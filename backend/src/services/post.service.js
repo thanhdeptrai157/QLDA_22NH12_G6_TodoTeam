@@ -197,6 +197,37 @@ const getNewestPosts = async (limit = 5) =>{
         limit
     });
 }
+
+const getInactivePosts = async () => {
+  return await Post.findAll({
+    where: {
+      is_active: false
+    }
+  });
+};
+
+const togglePostActiveStatus = async (id) => {
+  const post = await Post.findByPk(id);
+  if (!post) {
+    throw new Error('Post not found');
+  }
+
+  // Đảo giá trị is_active
+  post.is_active = !post.is_active;
+  await post.save();
+
+  return post;
+};
+
+const deletePostById = async (id) => {
+  const deletedCount = await Post.destroy({
+    where: { id: id }
+  });
+
+  // Trả về true nếu xóa thành công
+  return deletedCount > 0;
+};
+
 module.exports = {
   getAllPosts,
   createPost,
@@ -205,7 +236,10 @@ module.exports = {
   getPostByIdUser,
   updatePost,
   getTopPostsByLikes,
-  getNewestPosts
+  getNewestPosts,
+  getInactivePosts,
+  togglePostActiveStatus,
+  deletePostById
 };
 
 
