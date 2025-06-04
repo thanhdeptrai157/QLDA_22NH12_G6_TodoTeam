@@ -35,7 +35,8 @@ export interface Post {
 
 export interface CreatePostPayload {
   user_id: number;
-  place_id: string | null;
+  lat: number;
+  lng: number;
   stars: number | null;
   category_id: number | null;
   title: string;
