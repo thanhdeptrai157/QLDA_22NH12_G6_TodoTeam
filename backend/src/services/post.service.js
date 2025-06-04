@@ -31,7 +31,6 @@ const createPost = async (postData) => {
         });
         const totalStars = posts.reduce((acc, post) => acc + post.stars, 0);
         const averageStars = (totalStars + stars) / (posts.length + 1);
-        console.log(averageStars)
         await Place.update({ average_stars: averageStars }, { where: { id: place.id } });
     }
     console.log(postData)
