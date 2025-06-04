@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const { User } = require('../models');
 
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async  (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer token
 
@@ -8,12 +9,17 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: 'Access token missing' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Invalid token' });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.id);
 
-    req.user = user; // Gắn thông tin user từ token vào request
+    if (!user || !user.is_active) return res.sendStatus(403);
+
+    req.user = user; // gắn user vào request
     next();
-  });
+  } catch (err) {
+    res.status(403).json({ message: 'Invalid token' });
+  }
 };
 
 module.exports = authenticateToken;

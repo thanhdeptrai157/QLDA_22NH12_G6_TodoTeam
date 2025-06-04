@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/post.controller');
+const authorizeRole = require('../middlewares/authorize');
+const authenticateToken = require('../middlewares/authMiddleware');
 
 // Route to get all posts
 router.get('/', postController.getAllPosts);
@@ -9,6 +11,14 @@ router.get('/', postController.getAllPosts);
 router.post('/', postController.createPost);
 // lấy theo mới nhất
 router.get('/top/newest', postController.getNewestPosts);
+
+// Xem những bài viết bị bài viết bị báo cáo chỉ có admin có quyền
+router.get('/inactive_post', authenticateToken, authorizeRole.authorizeRole('admin'), postController.getInactivePosts);
+// Báo cáo hoặc bỏ báo cáo một bài viết người dùng và admin có thể báo cáo
+router.put('/:id/toggle-active', authenticateToken, postController.togglePostActive);
+// Xóa bài viết chỉ có admin có quyền
+router.delete('/:id', authenticateToken, authorizeRole.authorizeRole('admin'), postController.deletePost);
+
 // Route to get a post by ID
 router.get('/:id', postController.getPostById);
 router.get('/user/:user_id', postController.getPostByIdUser);

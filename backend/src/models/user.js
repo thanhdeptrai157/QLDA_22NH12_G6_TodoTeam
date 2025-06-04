@@ -23,8 +23,8 @@ const User = sequelize.define(
     is_active: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
-      field: 'is_active',
-    },
+      field: "is_active"
+    }
   },
   {
     tableName: 'user',

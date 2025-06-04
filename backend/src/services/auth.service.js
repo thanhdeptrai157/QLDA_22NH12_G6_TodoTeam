@@ -55,9 +55,47 @@ const updateProfile = async (userId, updateData) => {
   return user;
 };
 
+const getInactiveUsers = async () => {
+  return await User.findAll({
+    where: {
+      is_active: false
+    }
+  });
+};
+
+const getAllUsers = async () => {
+  return await User.findAll();
+};
+
+const toggleUserActiveStatus = async (userId) => {
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Đảo giá trị is_active
+  user.is_active = !user.is_active;
+  await user.save();
+
+  return user;
+};
+
+const deleteUserById = async (userId) => {
+  const deletedCount = await User.destroy({
+    where: { id: userId }
+  });
+
+  // Trả về true nếu xóa thành công
+  return deletedCount > 0;
+};
+
 module.exports = {
   getUserByEmail,
   createUser,
   changePassword,
-  updateProfile
+  updateProfile,
+  getInactiveUsers,
+  getAllUsers,
+  toggleUserActiveStatus,
+  deleteUserById
 };
