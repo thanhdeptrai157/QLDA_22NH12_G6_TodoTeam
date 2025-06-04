@@ -51,13 +51,14 @@ export default function CreatePostPage() {
     content: "",
     placeName: "",
     placeAddress: "",
-    placeId: "",
+    longitude: "",
+    latitude: "",
     categoryId: "",
     star: 0,
     image: [] as string[],
   })
 
-  const { isLoading: isPlaceLoading, error: placeError, data: placeData, fetchPlaceSuggestion } = useGoong()
+  const { isLoading: isPlaceLoading, error: placeError, data: placeData, fetchPlaceSuggestion, fetchLocation } = useGoong()
   const { isLoading: isCategoryLoading, error: categoryError, category: categoryData } = useCategory()
 
 
@@ -133,13 +134,17 @@ export default function CreatePostPage() {
     }))
   }
 
-  const selectPlace = (place: any) => {
+  const selectPlace = async (place: any) => {
+    const response = await fetchLocation(place.id)
+    const location = response?.result?.geometry?.location
     setFormData((prev) => ({
       ...prev,
       placeName: place.name,
       placeAddress: place.address,
-      placeId: place.id.toString(),
+      latitude: location?.lat,
+      longitude: location?.lng, 
     }))
+
     setShowPlaceSearch(false)
     setSearchResults([])
     setSearchTerm("")
@@ -186,7 +191,8 @@ export default function CreatePostPage() {
         user_id: Number(formData.user_id),
         title: formData.title,
         content: formData.content,
-        place_id: formData.placeId,
+        lat: Number(formData.latitude),
+        lng: Number(formData.longitude),
         stars: Number(formData.star),
         category_id: Number(formData.categoryId),
         images: imageUrls,
@@ -466,4 +472,6 @@ export default function CreatePostPage() {
     </div>
   )
 }
+
+
 
