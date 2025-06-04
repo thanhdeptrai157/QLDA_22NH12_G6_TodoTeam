@@ -53,11 +53,20 @@ const getNewestPosts = async (limit?: number) => {
         throw error;
     }
 };
-
+const getPostsByCategory = async (category_id: number) => {
+    try {
+        const response = await api.get(POST.GET_POST_BY_CATEGORY(category_id));
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching posts by category:", error);
+        throw error;
+    }
+}
 export const postService = {
     getAllUserPosts,
     createPost,
     getDetailPost,
     getTopPostsByLikes,
-    getNewestPosts
+    getNewestPosts,
+    getPostsByCategory
 };

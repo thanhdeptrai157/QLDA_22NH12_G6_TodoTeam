@@ -87,6 +87,21 @@ export const usePost = () => {
             setIsLoading(false);
         }
     };
+    const getPostsByCategory = async (category_id: number) => {
+        setIsLoading(true);
+        setError("");
+        setMessage("");
+
+        try {
+            const response = await postService.getPostsByCategory(category_id);
+            return response;
+        } catch (err: any) {
+            setError("Có lỗi xảy ra khi lấy bài viết theo danh mục.");
+            return null;
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return{
         isLoading,
         error,
@@ -95,7 +110,8 @@ export const usePost = () => {
         getDetailPost,
         getPostByUserId,
         getTopPostsByLikes,
-        getNewestPosts
+        getNewestPosts,
+        getPostsByCategory
     }
 }
 

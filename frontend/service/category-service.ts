@@ -20,7 +20,17 @@ export const getAllPostsByCategory = async () => {
         throw error;
     }
 }
+const getAllCategoryWithDetails = async () => {
+    try {
+        const response = await api.get(CATEGORY.GET_ALL_CATEGORY_WITH_DETAILS);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching categories with details:", error);
+        throw error;
+    }
+}
 export const categoryService = {
     getAllCategories,
     getAllPostsByCategory,
+    getAllCategoryWithDetails
 };

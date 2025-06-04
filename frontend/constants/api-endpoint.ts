@@ -28,11 +28,15 @@ export const POST = {
     GET_NEWEST_POSTS(limit?: number) {
         return `/posts/top/newest${limit ? `?limit=${limit}` : ''}`;
     },
+    GET_POST_BY_CATEGORY(category_id: number) {
+        return `/posts/category/${category_id}`;
+    }
 }
 
 export const CATEGORY = {
     GET_CATEGORY: "/categories/",
-    GET_ALL_NUM_POST_BY_CATEGORY: `/categories/with-post-count/`
+    GET_ALL_NUM_POST_BY_CATEGORY: `/categories/with-post-count/`,
+    GET_ALL_CATEGORY_WITH_DETAILS: `/categories/with-details/`,
 }
 
 export const COMMENT = {
