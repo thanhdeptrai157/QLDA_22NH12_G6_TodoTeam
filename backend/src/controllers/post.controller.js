@@ -74,6 +74,42 @@ const getNewestPosts = async (req, res) => {
     }
 };
 
+const togglePostActive = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const updatedPost = await postService.togglePostActiveStatus(postId);
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+const getInactivePosts = async (req, res) => {
+  try {
+    const posts = await postService.getInactivePosts();
+    res.status(200).json({ posts });
+  } catch (error) {
+    console.error('Error fetching inactive posts:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const deletePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+
+    const deleted = await postService.deletePostById(postId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: 'Bài viết không tồn tại' });
+    }
+
+    res.status(200).json({ message: 'Xóa bài viết thành công' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
     getAllPosts,
     createPost,
@@ -82,5 +118,8 @@ module.exports = {
     updatePost,
     getPostByIdUser,
     getTopPostsByLikes,
-    getNewestPosts
+    getNewestPosts,
+    togglePostActive,
+    getInactivePosts,
+    deletePost
 };
