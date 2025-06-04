@@ -17,19 +17,22 @@ const getAllPosts = async () => {
 };
 
 const createPost = async (postData) => {
-    const { user_id, title, content, category_id, place_id, images, place_name , place_address, stars } = postData;
-    const place = await Place.findOne({ where: { id: place_id } });
+    const { user_id, title, content, category_id, images, place_name , place_address,location, stars } = postData;
+    const place = await Place.findOne({ where: { name: place_name, address: place_address } });
+    let place_id = null;
     if (!place) {
-        const newPlace = await Place.create({id: place_id, name: place_name, address: place_address, average_stars: stars });
+        const newPlace = await Place.create({ name: place_name, address: place_address, average_stars: stars, longitude: location.lng, latitude: location.lat });
+        place_id = newPlace.id;
     } else {
+        place_id = place.id;
         const posts = await Post.findAll({
             attributes: ['stars'],
-            where: { place_id: place_id }
+            where: { place_id: place.id }
         });
         const totalStars = posts.reduce((acc, post) => acc + post.stars, 0);
         const averageStars = (totalStars + stars) / (posts.length + 1);
         console.log(averageStars)
-        await Place.update({ average_stars: averageStars }, { where: { id: place_id } });
+        await Place.update({ average_stars: averageStars }, { where: { id: place.id } });
     }
     console.log(postData)
     return await Post.create({

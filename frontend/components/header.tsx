@@ -52,7 +52,7 @@ export default function Header() {
                 <Link href="/" className="text-lg font-medium">
                   Trang chủ
                 </Link>
-                <Link href="/posts" className="text-lg font-medium">
+                <Link href="/explore" className="text-lg font-medium">
                   Khám phá
                 </Link>
                 <Link href="/categories" className="text-lg font-medium">
@@ -91,7 +91,7 @@ export default function Header() {
             <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
               Trang chủ
             </Link>
-            <Link href="/posts" className="text-sm font-medium transition-colors hover:text-primary">
+            <Link href="/explore" className="text-sm font-medium transition-colors hover:text-primary">
               Khám phá
             </Link>
             <Link href="/categories" className="text-sm font-medium transition-colors hover:text-primary">
