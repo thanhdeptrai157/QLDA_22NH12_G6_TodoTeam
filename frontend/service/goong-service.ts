@@ -1,31 +1,29 @@
-import goongAxios from "@/configs/goong";
-import { GOONG } from "@/constants/api-endpoint";
-
-
 const fetchPlaceSuggestion = async (keyword: string) => {
     try {
-        const response = await goongAxios.get(GOONG.PLACE_SUGGEST, {
-            params: {
-                input: keyword,
-            },
+        const response = await fetch('/api/goong', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'suggest', params: { input: keyword } }),
         });
-        return response.data;
+        if (!response.ok) throw new Error('Goong API error');
+        return await response.json();
     } catch (error) {
-        console.error("Error fetching place suggestions:", error);
+        console.error('Error fetching place suggestions:', error);
         throw error;
     }
 }
 
 const fetchLocation = async (place_id: string) => {
     try {
-        const response = await goongAxios.get(GOONG.PLACE_DETAIL, {
-            params: {
-                place_id: place_id,
-            },
+        const response = await fetch('/api/goong', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'detail', params: { place_id } }),
         });
-        return response.data;
+        if (!response.ok) throw new Error('Goong API error');
+        return await response.json();
     } catch (error) {
-        console.error("Error fetching location details:", error);
+        console.error('Error fetching location details:', error);
         throw error;
     }
 }

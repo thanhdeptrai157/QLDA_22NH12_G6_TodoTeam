@@ -59,13 +59,18 @@ export default function ChatbotPage() {
     setIsLoading(true)
 
     try {
-      // Simulate AI response using AI SDK
-      const { text } = await generateText({
-        model: openai("gpt-4o"),
-        prompt: `Bạn là TravelBot, một trợ lý AI chuyên về du lịch Việt Nam. Hãy trả lời câu hỏi sau đây một cách thân thiện và hữu ích. Câu hỏi: ${input}`,
-        system:
-          "Bạn là TravelBot, một trợ lý AI chuyên về du lịch Việt Nam. Hãy cung cấp thông tin chính xác, đề xuất địa điểm phù hợp và trả lời mọi câu hỏi liên quan đến du lịch. Luôn trả lời bằng tiếng Việt.",
+      // Gửi prompt đến API Gemini với hướng dẫn hệ thống chỉ trả lời về du lịch
+      const system =
+        "Bạn là TravelBot, một trợ lý AI chuyên về du lịch Việt Nam. Luôn trả lời bằng tiếng Việt, thân thiện, đúng ngữ nghĩa, cung cấp thông tin chính xác, đề xuất địa điểm, hoạt động phù hợp và giải đáp mọi thắc mắc về du lịch. Nếu câu hỏi không liên quan đến du lịch, hãy trả lời: 'Xin lỗi, tôi chỉ có thể hỗ trợ các thông tin liên quan đến du lịch.'"
+      const res = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: `${system}\nCâu hỏi: ${input}` }),
       })
+      if (!res.ok) throw new Error("Gemini API error")
+      const data = await res.json()
+      // Lấy nội dung trả về từ Gemini
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không có câu trả lời phù hợp."
 
       const botMessage: Message = {
         id: Date.now().toString(),
