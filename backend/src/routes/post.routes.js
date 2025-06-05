@@ -30,5 +30,7 @@ router.get('/top/likes', postController.getTopPostsByLikes);
 
 
 router.get('/user/:user_id', postController.getPostByIdUser);
+// Route to get posts by category
+router.get('/category/:category_id', postController.getPostsByCategory);
 
 module.exports = router;

@@ -12,7 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/supabase-js": "^2.49.9",
     "bcrypt": "^5.1.1",
     "blog_travel": "file:",
     "cors": "^2.8.5",

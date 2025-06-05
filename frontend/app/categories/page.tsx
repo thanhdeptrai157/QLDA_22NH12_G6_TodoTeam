@@ -42,7 +42,7 @@ export default function CategoriesPage() {
   const categories = [
     {
       name: "Biển",
-      slug: "beach",
+      id: "1",
       count: 120,
       color: "beach",
       description: "Khám phá những bãi biển tuyệt đẹp với cát trắng, nước xanh và nhiều hoạt động thú vị.",
@@ -51,7 +51,7 @@ export default function CategoriesPage() {
     },
     {
       name: "Núi",
-      slug: "mountain",
+      id: "2",
       count: 85,
       color: "mountain",
       description: "Chinh phục những đỉnh núi hùng vĩ, khám phá hang động và trải nghiệm không khí trong lành.",
@@ -60,7 +60,7 @@ export default function CategoriesPage() {
     },
     {
       name: "Thành phố",
-      slug: "city",
+      id: "3",
       count: 150,
       color: "city",
       description: "Khám phá nhịp sống sôi động, văn hóa đa dạng và ẩm thực phong phú tại các thành phố.",
@@ -69,7 +69,7 @@ export default function CategoriesPage() {
     },
     {
       name: "Đảo",
-      slug: "island",
+      id: "4",
       count: 65,
       color: "island",
       description: "Khám phá những hòn đảo thiên đường với bãi biển hoang sơ và hệ sinh thái đa dạng.",
@@ -78,7 +78,7 @@ export default function CategoriesPage() {
     },
     {
       name: "Làng quê",
-      slug: "countryside",
+      id: "5",
       count: 40,
       color: "countryside",
       description: "Trải nghiệm cuộc sống yên bình, văn hóa truyền thống và ẩm thực đặc sắc tại làng quê Việt Nam.",
@@ -107,7 +107,7 @@ export default function CategoriesPage() {
       <div className="grid grid-cols-1 gap-8">
         {categories.map((category) => (
           <Card
-            key={category.slug}
+            key={category.id}
             className={`overflow-hidden ${getCategoryBorderClass(category.color)} transition-all hover-scale`}
           >
             <div className="grid grid-cols-1 md:grid-cols-3">
@@ -121,7 +121,7 @@ export default function CategoriesPage() {
                   <p className="text-sm text-white/80">{category.count} bài viết</p>
                 </div>
                 <Button className="mt-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm w-full md:w-auto" asChild>
-                  <Link href={`/categories/${category.slug}`}>Khám phá</Link>
+                  <Link href={`/categories/${category.id}`}>Khám phá</Link>
                 </Button>
               </div>
               <div className="col-span-2 p-6">
@@ -130,7 +130,7 @@ export default function CategoriesPage() {
                   {category.featuredPlaces.map((place, index) => (
                     <Link
                       key={index}
-                      href={`/search/advanced/?address=${encodeURIComponent(place)}&category=${category.slug}`}
+                      href={`/search/advanced/?address=${encodeURIComponent(place)}&category=${category.id}`}
                       className="flex items-center gap-2 p-3 rounded-lg hover:bg-muted transition-colors"
                     >
                       <MapPin className={getCategoryTextClass(category.color)} />
