@@ -1,17 +1,16 @@
-// services/search.service.js
 const { Op } = require('sequelize');
-const { Post, Place, User, Category, Like } = require('../models'); // Đảm bảo import đủ
+const { Post, Place, User, Category, Like } = require('../models');
 
-// Helper function để định nghĩa các includes chung cho Post
 const getPostIncludes = () => [
     { model: User, attributes: ['id', 'name', 'email'] },
     { model: Category, attributes: ['id', 'name'] },
     { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
     {
         model: Like,
-        as: 'like', // Phải khớp với alias trong Post model's association
-        attributes: ['id', 'user_id', 'post_id'], // Các trường PostCard cần từ Like
-        required: false // Trả về post ngay cả khi không có like
+        as: 'like',
+        attributes: ['id', 'user_id', 'target_id'],
+        where: { is_post: true },
+        required: false
     }
 ];
 
@@ -21,8 +20,13 @@ exports.findByLocation = async (locationName) => {
     }
 
     const places = await Place.findAll({
-        where: { name: { [Op.iLike]: `%${locationName}%` } },
-        attributes: ['id'] // Chỉ cần ID của place
+        where: {
+            [Op.or]: [
+                { name: { [Op.iLike]: `%${locationName}%` } },
+                { address: { [Op.iLike]: `%${locationName}%` } }
+            ]
+        },
+        attributes: ['id']
     });
 
     if (places.length === 0) {
@@ -48,48 +52,43 @@ exports.findByCategory = async (category_id) => {
     });
 };
 
-exports.advancedSearch = async ({ keyword, locationName, address, category_id, stars }) => {
+exports.advancedSearch = async ({ locationName, category_id, stars }) => {
     const queryOptions = {
         where: {},
         include: getPostIncludes(),
         order: [['created_at', 'DESC']],
     };
 
-    if (keyword && keyword.trim() !== "") {
-        queryOptions.where[Op.or] = [
-            { title: { [Op.iLike]: `%${keyword}%` } },
-            { content: { [Op.iLike]: `%${keyword}%` } }
-        ];
-    }
-
-    const placeConditions = {};
+    // Tìm theo địa điểm (name hoặc address)
     if (locationName && locationName.trim() !== "") {
-        placeConditions.name = { [Op.iLike]: `%${locationName}%` };
-    }
-    if (address && address.trim() !== "") {
-        placeConditions.address = { [Op.iLike]: `%${address}%` };
-    }
-
-    if (Object.keys(placeConditions).length > 0) {
-        const places = await Place.findAll({ where: placeConditions, attributes: ['id'] });
+        const places = await Place.findAll({
+            where: {
+                [Op.or]: [
+                    { name: { [Op.iLike]: `%${locationName}%` } },
+                    { address: { [Op.iLike]: `%${locationName}%` } }
+                ]
+            },
+            attributes: ['id']
+        });
         if (places.length === 0) {
-            return []; // Không tìm thấy Place, không có Post để trả về
+            return [];
         }
         const placeIds = places.map(place => place.id);
         queryOptions.where.place_id = { [Op.in]: placeIds };
     }
 
+    // Lọc theo category nếu có
     if (category_id && String(category_id).toLowerCase() !== 'all') {
         queryOptions.where.category_id = parseInt(category_id);
     }
 
+    // Lọc theo số sao nếu có
     if (stars) {
         const parsedStars = parseInt(stars);
         if (!isNaN(parsedStars) && parsedStars >= 1 && parsedStars <= 5) {
             queryOptions.where.stars = parsedStars;
         }
     }
-    
-    // Trả về tất cả các post khớp điều kiện, không phân trang
+
     return await Post.findAll(queryOptions);
 };
