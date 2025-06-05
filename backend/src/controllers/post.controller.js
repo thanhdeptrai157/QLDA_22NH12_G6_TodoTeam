@@ -64,6 +64,16 @@ const getTopPostsByLikes = async (req, res) => {
     }
 };
 
+const getPostsByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.category_id;
+        const posts = await postService.getPostsByCategory(categoryId);
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const getNewestPosts = async (req, res) => {
     try {
         const limit = req.query.limit ? parseInt(req.query.limit) : 5;
@@ -124,6 +134,7 @@ module.exports = {
     createPost,
     getPostById,
     getPostByIdPlace,
+    getPostsByCategory,
     updatePost,
     getPostByIdUser,
     getTopPostsByLikes,
