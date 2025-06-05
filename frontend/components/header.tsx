@@ -17,7 +17,7 @@ import { ThemeToggle } from "./theme-toggle"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuthStore } from "@/store/user"
 import { authService } from "@/service/auth-service"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "@/hooks/use-auth"
 
 export default function Header() {
   const {user } = useAuthStore()

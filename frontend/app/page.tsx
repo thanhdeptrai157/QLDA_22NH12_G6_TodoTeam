@@ -7,8 +7,8 @@ import { SearchBar } from "@/components/search-bar"
 import { CategoryHighlight } from "@/components/category-highlight"
 import { HeroSection } from "@/components/hero-section"
 import { useAuthStore } from "@/store/user"
-import { useCategoryWithPostCount } from "@/hooks/useCategory"
-import { usePost } from "@/hooks/usePost";
+import { useCategoryWithPostCount } from "@/hooks/use-category"
+import { usePost } from "@/hooks/use-post";
 import { useEffect, useState } from "react";
 
 export default function Home() {

@@ -250,3 +250,7 @@
   background-image: linear-gradient(to right, hsl(var(--countryside)), hsl(var(--countryside-dark)));
 }
 
+.leaflet-container {
+  z-index: 0 !important;
+}
+
