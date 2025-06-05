@@ -94,7 +94,6 @@ const getTopCategory = async (limit = 3) => {
       limit: limit,
       subQuery: false
     });
-    console.log(topCategory);
     return topCategory;
   } catch (error) {
     console.error('Error fetching top category:', error);
