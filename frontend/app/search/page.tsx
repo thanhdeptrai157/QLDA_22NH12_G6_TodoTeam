@@ -31,14 +31,14 @@ export default function SearchPage() {
 
         if (isLocationEmpty && isCategoryAll && isStarsAll) {
           // Lấy tất cả bài viết
-          url = `http://localhost:8000/posts`
+          url = `${process.env.NEXT_PUBLIC_API_URL}posts`
         } else {
           // Advanced search cho mọi trường hợp còn lại
           const params = new URLSearchParams()
           if (!isLocationEmpty) params.set("locationName", locationName.trim())
           if (!isCategoryAll) params.set("category_id", category_id)
           if (!isStarsAll) params.set("stars", stars)
-          url = `http://localhost:8000/search/advanced?${params.toString()}`
+          url = `${process.env.NEXT_PUBLIC_API_URL}search/advanced?${params.toString()}`
         }
         res = await fetch(url)
         if (!res.ok) throw new Error("Lỗi khi tìm kiếm bài viết")
