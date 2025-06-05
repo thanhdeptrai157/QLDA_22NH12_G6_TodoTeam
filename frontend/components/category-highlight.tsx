@@ -6,11 +6,11 @@ import { MapPin } from "lucide-react"
 interface CategoryHighlightProps {
   category: {
     id: string
+    slug?: string   // ⚠ có thể undefined
     name: string
     postCount: number
   }
 }
-
 const getCategoryBgClass = (id: string) => {
   const colors: Record<string, string> = {
     1: "bg-blue-500",
@@ -46,7 +46,7 @@ const getCategoryBorderClass = (color: string) => {
 
 export function CategoryHighlight({ category }: CategoryHighlightProps) {
   return (
-    <Link href={`/categories/${category.id}`} className="block hover-scale">
+    <Link href={`/categories/${category.slug || category.id}`}>
       <Card className={`overflow-hidden ${getCategoryBorderClass(category.id)} transition-all h-full`}>
         <div className={`h-2 ${getCategoryBgClass(category.id)}`}></div>
         <CardContent className="p-4 flex flex-col items-center justify-center text-center">

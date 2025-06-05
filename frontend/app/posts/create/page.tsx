@@ -174,17 +174,16 @@ export default function CreatePostPage() {
 
       for (const file of imageFiles) {
         const filePath = `${Date.now()}`
-        const { error: uploadError } = await supabase.storage
-          .from("image-travel-app")
-          .upload(filePath, file)
-
-        if (uploadError) throw uploadError
-
-        const { data: publicUrlData } = supabase.storage
-          .from("image-travel-app")
-          .getPublicUrl(filePath)
-
-        imageUrls.push(publicUrlData.publicUrl)
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('filePath', filePath);
+        const res = await fetch('/api/supabase-upload', {
+          method: 'POST',
+          body: formData,
+        });
+        if (!res.ok) throw new Error('Upload error');
+        const { publicUrl } = await res.json();
+        imageUrls.push(publicUrl);
       }
 
       await postService.createPost({
