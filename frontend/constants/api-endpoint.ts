@@ -1,3 +1,5 @@
+import { get } from "http";
+
 export const AUTH = {
     LOGIN: "/auth/login/",
     LOGOUT: "/auth/logout/",
@@ -16,7 +18,11 @@ export const PLACE = {
     GET_ALL_PLACES: "/places/",
     GET_PLACE_BY_ID(id: number) {
         return `/places/${id}`;
-    }
+    },
+    GET_PLACE_TRENDING: "/places/trending",
+    GET_PLACE_RECENT: "/places/recent",
+    GET_PLACE_TOP_RATED: "/places/top-rated",
+    GET_PLACE_POPULAR: "/places/popular",
 }
 
 export const POST = {
@@ -43,6 +49,7 @@ export const CATEGORY = {
     GET_CATEGORY: "/categories/",
     GET_ALL_NUM_POST_BY_CATEGORY: `/categories/with-post-count/`,
     GET_ALL_CATEGORY_WITH_DETAILS: `/categories/with-details/`,
+    GET_TOP_CATEGORY: `/categories/top/`,
 }
 
 export const COMMENT = {

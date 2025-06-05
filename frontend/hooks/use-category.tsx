@@ -86,3 +86,30 @@ export const useCategoryWithDetails = () => {
         categories,
     };
 }
+export const useTopCategories = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [categories, setCategories] = useState<any[]>([]);
+    useEffect(() => {
+        const fetchCategories = async () => {
+            setIsLoading(true);
+            setError("");
+            try {
+                const response = await categoryService.getTopCategories();
+                setCategories(response.data);
+                return response;
+            } catch (err: any) {
+                setError("Có lỗi xảy ra khi lấy danh sách danh mục hàng đầu.");
+                return null;
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchCategories();
+    }, []);
+    return {
+        isLoading,
+        error,
+        categories,
+    };
+};

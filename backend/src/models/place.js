@@ -10,7 +10,9 @@ const Place = sequelize.define(
     longitude: { type: Sequelize.DOUBLE, allowNull: true, // Cho phép NULL tạm thời
       defaultValue: null },
     latitude: { type: Sequelize.DOUBLE, allowNull: true, // Cho phép NULL tạm thời
-      defaultValue: null },
+      defaultValue: null
+    },
+    created_at: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
   },
   {
     tableName: 'place',
