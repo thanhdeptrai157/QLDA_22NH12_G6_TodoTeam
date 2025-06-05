@@ -10,7 +10,13 @@ export const AUTH = {
 export const GOONG = {
     PLACE_SUGGEST: "/Place/AutoComplete",
     PLACE_DETAIL: "/Place/Detail",
-}
+    MAP_NORMAL(MAP_KEY: string) {
+        return `https://tiles.goong.io/assets/goong_map_web.json?api_key=${MAP_KEY}`;
+    },
+    MAP_SATELLITE(MAP_KEY: string) {
+        return `https://tiles.goong.io/assets/goong_satellite.json?api_key=${MAP_KEY}`;
+    }
+};
 
 export const PLACE = {
     GET_ALL_PLACES: "/places/",
@@ -63,4 +69,8 @@ export const WEATHER = {
     GET_WEATHER_BY_LOCATION(lat: number, lng: number) {
         return `/weather?lat=${lat}&lon=${lng}`;
     }
+}
+
+export const GEMINI = {
+    MODEL_2_0_FLASH: "/models/gemini-2.0-flash:generateContent",
 }

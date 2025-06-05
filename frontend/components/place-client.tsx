@@ -29,8 +29,8 @@ import { useEffect } from "react"
 import { useWeather } from "@/hooks/use-weather";
 import { changeKelvinToCelsius } from "@/lib/utils";
 import { weatherMainToVietnamese } from "@/constants/weather-map";
-
-const MyMap = dynamic(() => import('@/components/map'), { ssr: false });
+import MyMap from "./map";
+;
 
 export const PlaceClient = ({ id }: { id: number }) => {
     const { data, isLoading, error, fetchPlaceById } = usePlace();
@@ -571,7 +571,7 @@ export const PlaceClient = ({ id }: { id: number }) => {
                                         <div className="flex items-center justify-center mb-2">
                                             <img src={`https://openweathermap.org/img/wn/${weather?.weather[0]?.icon}@2x.png`} alt="Weather icon" />
                                         </div>
-                                        <p className="text-3xl font-bold mb-1">{changeKelvinToCelsius(weather?.main.temp!)}°C</p>
+                                        <p className="text-3xl font-bold mb-1">{weather?.main.temp!}°C</p>
                                         <p className="text-muted-foreground">{data?.name}, Việt Nam</p>
                                         <div className="grid grid-cols-3 gap-2 mt-4">
                                             <div className="text-center">
