@@ -4,8 +4,8 @@ import Link from "next/link"
 import { PostCard } from "@/components/post-card"
 import { SearchBar } from "@/components/search-bar"
 import { MapPin } from "lucide-react"
-import { useCategoryWithPostCount } from "@/hooks/useCategory"
-import { usePost } from "@/hooks/usePost"
+import { useCategoryWithPostCount } from "@/hooks/use-category"
+import { usePost } from "@/hooks/use-post"
 import { use, useEffect, useState } from "react"
 
 interface CategoryPageProps {

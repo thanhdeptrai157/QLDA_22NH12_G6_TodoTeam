@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useEffect } from 'react';
 
-// Khắc phục lỗi icon marker không hiển thị
+
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -13,17 +13,23 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-export default function MyMap() {
+const MyMap = ({lat, lng} : {lat: number | undefined, lng: number | undefined}) => {
   useEffect(() => {
     // client-side only logic (nếu cần)
   }, []);
-
+  // Nếu lat hoặc lng undefined thì trả về bản đồ mặc định tại vị trí Hà Nội
+  const defaultLat = 21.0285;
+  const defaultLng = 105.8542;
+  const centerLat = typeof lat === 'number' ? lat : defaultLat;
+  const centerLng = typeof lng === 'number' ? lng : defaultLng;
   return (
-    <MapContainer center={[16.06808819999999, 108.1543777]} zoom={13} style={{ height: '400px', width: '100%' }}>
+    <MapContainer center={[centerLat, centerLng]} zoom={13} style={{ height: '400px', width: '100%' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={[16.06808819999999, 108.1543777]}>
+      <Marker position={[centerLat, centerLng]}>
         <Popup>Vị trí của bạn</Popup>
       </Marker>
     </MapContainer>
   );
 }
+
+export default MyMap;

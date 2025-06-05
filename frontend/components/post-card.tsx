@@ -82,8 +82,8 @@ export function PostCard({ post, layout = "vertical" }: PostCardProps) {
               <h3 className="text-lg font-bold line-clamp-2 hover:text-primary transition-colors">{post.title}</h3>
             </Link>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Link href={`/places/${post?.place.id}`} className="hover:text-primary transition-colors">
-                {post?.place.name}
+              <Link href={`/places/${post?.place?.id}`} className="hover:text-primary transition-colors">
+                {post?.place?.name}
               </Link>
               <span>•</span>
               {/* <span>{formatDate(post.created_at)}</span> */}

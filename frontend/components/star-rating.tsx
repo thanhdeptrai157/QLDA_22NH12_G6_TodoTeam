@@ -16,13 +16,12 @@ export function StarRating({ rating, max = 5, size = "md", interactive = false, 
     md: "h-4 w-4",
     lg: "h-5 w-5",
   }
-
   const handleClick = (index: number) => {
     if (interactive && onChange) {
       onChange(index + 1)
     }
   }
-
+  
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: max }).map((_, index) => (

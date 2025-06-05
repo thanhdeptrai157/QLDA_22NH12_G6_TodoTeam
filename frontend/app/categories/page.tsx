@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { SearchBar } from "@/components/search-bar"
 import { MapPin } from "lucide-react"
-import { useCategoryWithDetails } from "@/hooks/useCategory"
+import { useCategoryWithDetails } from "@/hooks/use-category"
 
 // Tạo mảng màu gradient random
 const gradientColors = [

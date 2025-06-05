@@ -23,7 +23,7 @@ import {
 } from "lucide-react"
 import { useAuthStore } from "@/store/user"
 import { Post } from "@/types/post"
-import { usePost } from "@/hooks/usePost"
+import { usePost } from "@/hooks/use-post"
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("posts")
