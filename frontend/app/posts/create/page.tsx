@@ -17,9 +17,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Camera, MapPin, ImageIcon, Smile, X, PlusCircle, Eye, Search, ChevronLeft } from "lucide-react"
 import { PostPreview } from "@/components/post-preview"
-import { useGoong } from "@/hooks/useGoong"
+import { useGoong } from "@/hooks/use-goong"
 import { useAuthStore } from "@/store/user"
-import { useCategory } from "@/hooks/useCategory"
+import { useCategory } from "@/hooks/use-category"
 import { postService } from "@/service/post-service"
 import { supabase } from "@/configs/supabase"
 
@@ -51,13 +51,14 @@ export default function CreatePostPage() {
     content: "",
     placeName: "",
     placeAddress: "",
-    placeId: "",
+    longitude: "",
+    latitude: "",
     categoryId: "",
     star: 0,
     image: [] as string[],
   })
 
-  const { isLoading: isPlaceLoading, error: placeError, data: placeData, fetchPlaceSuggestion } = useGoong()
+  const { isLoading: isPlaceLoading, error: placeError, data: placeData, fetchPlaceSuggestion, fetchLocation } = useGoong()
   const { isLoading: isCategoryLoading, error: categoryError, category: categoryData } = useCategory()
 
 
@@ -133,13 +134,17 @@ export default function CreatePostPage() {
     }))
   }
 
-  const selectPlace = (place: any) => {
+  const selectPlace = async (place: any) => {
+    const response = await fetchLocation(place.id)
+    const location = response?.result?.geometry?.location
     setFormData((prev) => ({
       ...prev,
       placeName: place.name,
       placeAddress: place.address,
-      placeId: place.id.toString(),
+      latitude: location?.lat,
+      longitude: location?.lng, 
     }))
+
     setShowPlaceSearch(false)
     setSearchResults([])
     setSearchTerm("")
@@ -186,7 +191,8 @@ export default function CreatePostPage() {
         user_id: Number(formData.user_id),
         title: formData.title,
         content: formData.content,
-        place_id: formData.placeId,
+        lat: Number(formData.latitude),
+        lng: Number(formData.longitude),
         stars: Number(formData.star),
         category_id: Number(formData.categoryId),
         images: imageUrls,
@@ -466,4 +472,6 @@ export default function CreatePostPage() {
     </div>
   )
 }
+
+
 

@@ -142,34 +142,6 @@ export default function ExplorePage() {
     },
   ]
 
-  // Mock popular activities
-  const popularActivities = [
-    {
-      id: 1,
-      name: "Chèo thuyền kayak",
-      image: "/placeholder.svg?height=300&width=400",
-      count: 120,
-    },
-    {
-      id: 2,
-      name: "Leo núi",
-      image: "/placeholder.svg?height=300&width=400",
-      count: 85,
-    },
-    {
-      id: 3,
-      name: "Lặn biển",
-      image: "/placeholder.svg?height=300&width=400",
-      count: 95,
-    },
-    {
-      id: 4,
-      name: "Cắm trại",
-      image: "/placeholder.svg?height=300&width=400",
-      count: 110,
-    },
-  ]
-
   const getCategoryGradient = (category: string) => {
     const gradients: Record<string, string> = {
       beach: "from-blue-500 to-blue-700",
@@ -281,14 +253,12 @@ export default function ExplorePage() {
         </TabsContent>
 
         <TabsContent value="recent">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
               <h2 className="text-2xl font-bold mb-6">Địa điểm mới</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {recentPlaces.map((place) => (
                   <Link key={place.id} href={`/places/${place.id}`} className="block group">
                     <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
-                      <div className="relative h-40">
+                      <div className="relative h-48">
                         <Image
                           src={place.image || "/placeholder.svg"}
                           alt={place.name}
@@ -313,35 +283,6 @@ export default function ExplorePage() {
                   </Link>
                 ))}
               </div>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Hoạt động phổ biến</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {popularActivities.map((activity) => (
-                  <Link key={activity.id} href={`/activities/${activity.id}`} className="block group">
-                    <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
-                      <div className="relative h-40">
-                        <Image
-                          src={activity.image || "/placeholder.svg"}
-                          alt={activity.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                        <div className="absolute bottom-3 left-3 right-3">
-                          <h3 className="text-lg font-bold text-white">{activity.name}</h3>
-                          <div className="flex items-center">
-                            <span className="text-white/80 text-sm">{activity.count} địa điểm</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
         </TabsContent>
 
         <TabsContent value="top-rated">

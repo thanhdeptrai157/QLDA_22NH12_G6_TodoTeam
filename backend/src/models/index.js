@@ -18,10 +18,10 @@ Comment.belongsTo(User, { foreignKey: 'user_id' });
 Post.hasMany(Comment, { foreignKey: 'post_id' });
 Comment.belongsTo(Post, { foreignKey: 'post_id' });
 
-Category.hasMany(Post, { foreignKey: 'category_id' });
+Category.hasMany(Post, {foreignKey: 'category_id'});
 
 Post.belongsTo(Category, { foreignKey: 'category_id' });
-Post.belongsTo(Place, { foreignKey: 'place_id' });
+Post.belongsTo(Place, { foreignKey: 'place_id'});
 
 User.hasMany(Like, { foreignKey: 'user_id' });
 Like.belongsTo(User, { foreignKey: 'user_id' });

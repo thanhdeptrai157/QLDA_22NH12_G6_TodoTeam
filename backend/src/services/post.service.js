@@ -17,19 +17,21 @@ const getAllPosts = async () => {
 };
 
 const createPost = async (postData) => {
-    const { user_id, title, content, category_id, place_id, images, place_name , place_address, stars } = postData;
-    const place = await Place.findOne({ where: { id: place_id } });
+    const { user_id, title, content, category_id, images, place_name , place_address, lat, lng, stars } = postData;
+    const place = await Place.findOne({ where: { name: place_name, address: place_address } });
+    let place_id = null;
     if (!place) {
-        const newPlace = await Place.create({id: place_id, name: place_name, address: place_address, average_stars: stars });
+        const newPlace = await Place.create({ name: place_name, address: place_address, average_stars: stars, longitude: lng, latitude:lat });
+        place_id = newPlace.id;
     } else {
+        place_id = place.id;
         const posts = await Post.findAll({
             attributes: ['stars'],
-            where: { place_id: place_id }
+            where: { place_id: place.id }
         });
         const totalStars = posts.reduce((acc, post) => acc + post.stars, 0);
         const averageStars = (totalStars + stars) / (posts.length + 1);
-        console.log(averageStars)
-        await Place.update({ average_stars: averageStars }, { where: { id: place_id } });
+        await Place.update({ average_stars: averageStars }, { where: { id: place.id } });
     }
     console.log(postData)
     return await Post.create({
@@ -249,6 +251,29 @@ const deletePostById = async (id) => {
   return deletedCount > 0;
 };
 
+const getPostByCategory = async (category_id) => {
+    const posts = await Post.findAll({
+        where: { category_id },
+        include: [
+            { model: User, attributes: ['id', 'name', 'avatar_path'] },
+            { model: Category, attributes: ['id', 'name'] },
+            { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
+            { model: Like, as: 'like', attributes: ['user_id'],
+                where: {
+                    is_post: true
+                },
+                required: false
+            }
+        ],
+        order: [['created_at', 'DESC']]
+    });
+
+    if (!posts) {
+        throw new Error('No posts found for this category');
+    }
+
+    return posts;
+};
 module.exports = {
   getAllPosts,
   createPost,
@@ -261,7 +286,8 @@ module.exports = {
   getNewestPosts,
   getInactivePosts,
   togglePostActiveStatus,
-  deletePostById
+  deletePostById,
+  getPostByCategory
 };
 
 

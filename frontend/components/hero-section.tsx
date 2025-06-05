@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { MapPin, Camera, Star, Users, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect, useCallback } from "react"
-import { usePost } from "@/hooks/usePost"
+import { usePost } from "@/hooks/use-post"
 
 export function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)

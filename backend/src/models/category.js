@@ -2,8 +2,9 @@ const sequelize = require('../config/database');
 const { Sequelize } = require('sequelize');
 const Category = sequelize.define('category', {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: Sequelize.STRING, unique: true, allowNull: false }
-  }, {
+    name: { type: Sequelize.STRING, unique: true, allowNull: false },
+    description: { type: Sequelize.TEXT, allowNull: true },
+}, {
     tableName: 'category',
     timestamps: false
 });

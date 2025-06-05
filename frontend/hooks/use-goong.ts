@@ -20,11 +20,27 @@ export const useGoong = () =>{
             setIsLoading(false);
         }
     };
-
+    // lấy chi tiết địa điểm từ place_id
+    const fetchLocation = async (place_id: string) => {
+        setIsLoading(true);
+        setError("");
+        try {
+            const result = await goongService.fetchLocation(place_id);
+            console.log("Result fetch location", result);
+            return result;
+        } catch (error) {
+            console.error("Error fetching location details:", error);
+            setError("Error fetching location details");
+            return undefined;
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return {
         isLoading,
         error,
         data,
         fetchPlaceSuggestion,
+        fetchLocation,
     };
 }

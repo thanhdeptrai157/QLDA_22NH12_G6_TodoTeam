@@ -14,3 +14,7 @@ export function formatDate(dateString: string) {
   }).format(date)
 }
 
+export function changeKelvinToCelsius(kelvin: number) {
+  return Math.round(kelvin - 273.15)
+}
+

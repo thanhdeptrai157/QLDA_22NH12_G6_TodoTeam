@@ -12,6 +12,12 @@ export const GOONG = {
     PLACE_DETAIL: "/Place/Detail",
 }
 
+export const PLACE = {
+    GET_ALL_PLACES: "/places/",
+    GET_PLACE_BY_ID(id: number) {
+        return `/places/${id}`;
+    }
+}
 
 export const POST = {
     GET_POST: "/posts/", 
@@ -28,11 +34,15 @@ export const POST = {
     GET_NEWEST_POSTS(limit?: number) {
         return `/posts/top/newest${limit ? `?limit=${limit}` : ''}`;
     },
+    GET_POST_BY_CATEGORY(category_id: number) {
+        return `/posts/category/${category_id}`;
+    }
 }
 
 export const CATEGORY = {
     GET_CATEGORY: "/categories/",
-    GET_ALL_NUM_POST_BY_CATEGORY: `/categories/with-post-count/`
+    GET_ALL_NUM_POST_BY_CATEGORY: `/categories/with-post-count/`,
+    GET_ALL_CATEGORY_WITH_DETAILS: `/categories/with-details/`,
 }
 
 export const COMMENT = {
@@ -45,5 +55,12 @@ export const LIKE = {
     CREATE_LIKE: "/likes/",
     DELETE_LIKE(is_post: boolean, user_id: number, target_id: number) {
         return `/likes?is_post=${is_post}&user_id=${user_id}&target_id=${target_id}`;
+    }
+}
+
+
+export const WEATHER = {
+    GET_WEATHER_BY_LOCATION(lat: number, lng: number) {
+        return `/weather?lat=${lat}&lon=${lng}`;
     }
 }

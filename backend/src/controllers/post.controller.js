@@ -119,6 +119,15 @@ const deletePost = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+const getByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.category_id;
+        const posts = await postService.getPostByCategory(categoryId);
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
 
 module.exports = {
     getAllPosts,
@@ -132,5 +141,6 @@ module.exports = {
     getNewestPosts,
     togglePostActive,
     getInactivePosts,
-    deletePost
+    deletePost,
+    getByCategory
 };
