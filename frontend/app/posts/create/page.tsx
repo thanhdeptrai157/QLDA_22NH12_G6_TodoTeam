@@ -25,7 +25,6 @@ import { supabase } from "@/configs/supabase"
 
 export default function CreatePostPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [rating, setRating] = useState(0)
