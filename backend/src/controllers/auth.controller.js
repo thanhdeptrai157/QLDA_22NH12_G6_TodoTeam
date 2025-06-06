@@ -34,8 +34,11 @@ const login = async (req, res) => {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      avatarPath: user.avatarPath,
+      avatar_path: user.avatar_path,
+      cover_path: user.cover_path,
       role: user.role,
+      bio: user.bio,
+      address: user.address,
     };
     res.send({
       message: 'Login successful',
@@ -147,68 +150,25 @@ const changePassword = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { address, bio, phone } = req.body;
+    const { address, bio, phone, avatar_path, cover_path } = req.body;
 
     if (!req.body) {
       return res.status(400).json({ message: 'Missing request body' });
     }
-
-    const files = req.files;
-    const errors = [];
-    let avatar_path;
-    let cover_path;
-
-    // Hàm phụ để upload 1 ảnh và trả về public URL
-    const uploadToSupabase = async (file) => {
-      const fileName = `${Date.now()}_${file.originalname}`;
-      const { data, error } = await supabase.storage
-        .from('image-travel-app')
-        .upload(fileName, file.buffer, {
-          contentType: file.mimetype,
-        });
-
-      if (error) {
-        return { error: error.message };
-      }
-
-      const publicUrl = `${process.env.SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/image-travel-app/${fileName}`;
-      return { url: publicUrl };
-    };
-
-    // Xử lý ảnh avata
-    if (files.avatar_path && files.avatar_path.length > 0) {
-      const { url, error } = await uploadToSupabase(files.avatar_path[0]);
-      if (error) {
-        res.json({error: errors.push({ field: 'avatar', message: error })});
-      } else {
-        avatar_path = url;
-      }
-    }
-
-    // Xử lý ảnh background
-    if (files.cover_path && files.cover_path.length > 0) {
-      const { url, error } = await uploadToSupabase(files.cover_path[0]);
-      if (error) {
-        res.json({error: errors.push({ field: 'cover', message: error })});
-      } else {
-        cover_path = url;
-      }
-    }
-
     const updateData = {
       address,
       bio,
       phone,
+      avatar_path,
+      cover_path
     };
-
     if (avatar_path) {
       updateData.avatar_path = avatar_path;
     }
-
     if (cover_path) {
       updateData.cover_path = cover_path;
     }
-
+    console.log('Update data:', updateData);
     const updatedUser = await userService.updateProfile(userId, updateData);
 
     res.json({ message: 'Update thành công', user: updatedUser });

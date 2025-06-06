@@ -12,15 +12,10 @@ router.post('/login', authController.login);
 // Route đăng ký
 router.post('/register', authController.register);
 
-router.put('/:id/change-password', authenticateToken, authController.changePassword);
+router.put('/:id/change-password', authController.changePassword);
 
 router.put(
-  '/:id/profile',
-  authenticateToken,
-  upload.fields([
-    { name: 'avatar_path', maxCount: 1 },
-    { name: 'cover_path', maxCount: 1 },
-  ]),
+  '/:id/change-profile',
   authController.updateProfile
 );
 

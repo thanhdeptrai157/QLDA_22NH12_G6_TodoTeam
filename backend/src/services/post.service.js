@@ -3,7 +3,7 @@ const { Post, User, Category, Place, Like } = require('../models');
 const getAllPosts = async () => {
     return await Post.findAll({
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
             { model: Like, as: 'like', attributes: ['user_id'],
@@ -49,7 +49,7 @@ const getPostsByCategory = async (category_id) => {
     const posts = await Post.findAll({
         where: { category_id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             { model: Like, as: 'like', attributes: ['user_id'],
@@ -70,7 +70,7 @@ const getPostById = async (id) => {
     const post = await Post.findOne({
         where: { id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
             { model: Like, as: 'like', attributes: ['user_id'],
@@ -93,7 +93,7 @@ const getPostByIdPlace = async (place_id) => {
     const post = await Post.findOne({
         where: { place_id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             { model: Like, as: 'like', attributes: ['user_id'],
@@ -116,7 +116,7 @@ const getPostByIdUser = async (user_id) => {
     const post = await Post.findAll({
         where: { user_id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             { model: Like, as: 'like', attributes: ['user_id'],
@@ -184,7 +184,7 @@ const getTopPostsByLikes = async (limit = 5) => {
             ]
         },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             { model: Like, as: 'like', attributes: ['user_id'],
@@ -205,7 +205,7 @@ const getTopPostsByLikes = async (limit = 5) => {
 const getNewestPosts = async (limit = 5) =>{
     return await Post.findAll({
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             { model: Like, as: 'like', attributes: ['user_id'],
