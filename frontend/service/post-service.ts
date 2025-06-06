@@ -62,11 +62,45 @@ const getPostsByCategory = async (category_id: number) => {
         throw error;
     }
 }
+interface PostsResponse {
+  posts: Post[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+// frontend/service/post-service.ts
+const getAllPostsWithPagination = async (
+  page: number = 1, 
+  limit: number = 9, 
+  filters: {
+    category_id?: string;
+    search?: string;
+    sort_by?: string;
+    sort_order?: string;
+  } = {}
+): Promise<PostsResponse> => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    ...Object.fromEntries(
+      Object.entries(filters).filter(([_, value]) => value && value !== 'all')
+    )
+  });
+  // ✅ Sử dụng constant thay vì hardcode
+  const response = await api.get(`${POST.GET_PAGINATED_POSTS}?${params.toString()}`);
+    return response.data;
+};
 export const postService = {
     getAllUserPosts,
     createPost,
     getDetailPost,
     getTopPostsByLikes,
     getNewestPosts,
-    getPostsByCategory
+    getPostsByCategory,
+    getAllPostsWithPagination
 };
