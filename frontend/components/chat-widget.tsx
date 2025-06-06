@@ -1,102 +1,95 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Bot, Send, User, X, MessageSquare, Minimize2, Maximize2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
 import { motion, AnimatePresence } from "framer-motion"
-
-interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  timestamp: Date
-}
+import { useChatMessages } from "@/hooks/use-chat-messages" // ✅ Import hook
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content:
-        "Xin chào! Tôi là TravelBot, trợ lý AI của TravelShare. Tôi có thể giúp bạn tìm kiếm địa điểm du lịch, đề xuất các hoạt động và trả lời các câu hỏi về du lịch. Bạn muốn tìm hiểu về địa điểm nào?",
-      timestamp: new Date(),
-    },
-  ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+  
+  // Sử dụng custom hook thay vì useState local
+  const { messages, isLoaded, addMessage } = useChatMessages()
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
   useEffect(() => {
-    if (isOpen && !isMinimized) {
+    if (isOpen && !isMinimized && isLoaded) {
       scrollToBottom()
     }
-  }, [messages, isOpen, isMinimized])
+  }, [messages, isOpen, isMinimized, isLoaded])
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!input.trim()) return
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
+    // Add user message using hook
+    addMessage({
       role: "user",
       content: input,
-      timestamp: new Date(),
-    }
+    })
 
-    setMessages((prev) => [...prev, userMessage])
+    const currentInput = input
     setInput("")
     setIsLoading(true)
 
     try {
-      // Simulate AI response using AI SDK
-      const { text } = await generateText({
-        model: openai("gpt-4o"),
-        prompt: `Bạn là TravelBot, một trợ lý AI chuyên về du lịch Việt Nam. Hãy trả lời câu hỏi sau đây một cách thân thiện và hữu ích. Câu hỏi: ${input}`,
-        system:
-          "Bạn là TravelBot, một trợ lý AI chuyên về du lịch Việt Nam. Hãy cung cấp thông tin chính xác, đề xuất địa điểm phù hợp và trả lời mọi câu hỏi liên quan đến du lịch. Luôn trả lời bằng tiếng Việt.",
+      const response = await fetch("/api/gemini", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: `Bạn là TravelBot, một trợ lý AI chuyên về du lịch Việt Nam. Luôn trả lời bằng tiếng Việt, thân thiện, đúng ngữ nghĩa, cung cấp thông tin chính xác, đề xuất địa điểm, hoạt động phù hợp và giải đáp mọi thắc mắc về du lịch. Nếu câu hỏi không liên quan đến du lịch, hãy trả lời: 'Xin lỗi, tôi chỉ có thể hỗ trợ các thông tin liên quan đến du lịch.'\n\nCâu hỏi: ${currentInput}`
+        }),
       })
 
-      const botMessage: Message = {
-        id: Date.now().toString(),
-        role: "assistant",
-        content: text,
-        timestamp: new Date(),
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      setMessages((prev) => [...prev, botMessage])
+      const data = await response.json()
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không có câu trả lời phù hợp."
+
+      // Add bot response using hook
+      addMessage({
+        role: "assistant",
+        content: text,
+      })
     } catch (error) {
+      console.error("Chat error:", error)
+      
       toast({
         title: "Lỗi",
         description: "Không thể kết nối với trợ lý AI. Vui lòng thử lại sau.",
         variant: "destructive",
       })
 
-      const errorMessage: Message = {
-        id: Date.now().toString(),
+      // Add error message using hook
+      addMessage({
         role: "assistant",
         content: "Xin lỗi, tôi đang gặp sự cố kết nối. Vui lòng thử lại sau.",
-        timestamp: new Date(),
-      }
-
-      setMessages((prev) => [...prev, errorMessage])
+      })
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Chỉ render khi messages đã load xong
+  if (!isLoaded) {
+    return null // Hoặc skeleton loading
   }
 
   const toggleChat = () => {
