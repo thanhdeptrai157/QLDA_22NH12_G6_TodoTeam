@@ -110,14 +110,14 @@ export default function CategoriesPage() {
                   <h3 className="text-lg font-medium mb-4">Địa điểm nổi bật</h3>
                   {category.featuredPlaces && Array.isArray(category.featuredPlaces) &&  category.featuredPlaces.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {category.featuredPlaces.map((place: string, placeIndex: number) => (
+                      {category.featuredPlaces.map((place: any, placeIndex: number) => (
                         <Link
                           key={placeIndex}
-                          href={`/search/advanced/?address=${encodeURIComponent(place)}&category=${category.id}`}
+                          href={`/places/${place.id}`}
                           className="flex items-center gap-2 p-3 rounded-lg hover:bg-muted transition-colors"
                         >
                           <MapPin className={`h-4 w-4 ${colors.text}`} />
-                          <span>{place}</span>
+                          <span>{place.name}</span>
                         </Link>
                       ))}
                     </div>

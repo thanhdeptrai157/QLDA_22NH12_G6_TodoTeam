@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -6,153 +7,92 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PostCard } from "@/components/post-card"
 import { StarRating } from "@/components/star-rating"
 import { MapPin, TrendingUp, Clock, Award, Compass, Users } from "lucide-react"
+import { usePlace } from "@/hooks/use-place"
+import { PlaceExplore } from "@/types/place"
+import { useEffect, useState } from "react";
+import { usePost } from "@/hooks/use-post";
+import { useTopCategories } from "@/hooks/use-category";
 
 export default function ExplorePage() {
+  const { getTopPostsByLikes} = usePost();
+  const [featuredPosts, setFeaturedPosts] = useState<any[]>([]);
+   useEffect(() => {
+    const fetchTopPosts = async () => {
+      const posts = await getTopPostsByLikes(2);
+      setFeaturedPosts(posts || []);
+    };
+    fetchTopPosts();
+   }, []);
+  
+  const { categories, isLoading: isCategoryLoading } = useTopCategories()
   // Mock trending places
-  const trendingPlaces = [
-    {
-      id: 1,
-      name: "Vịnh Hạ Long",
-      province: "Quảng Ninh",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.8,
-      reviewCount: 245,
-      category: "beach",
-    },
-    {
-      id: 2,
-      name: "Phố cổ Hội An",
-      province: "Quảng Nam",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.9,
-      reviewCount: 320,
-      category: "city",
-    },
-    {
-      id: 3,
-      name: "Sapa",
-      province: "Lào Cai",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.7,
-      reviewCount: 189,
-      category: "mountain",
-    },
-    {
-      id: 4,
-      name: "Phú Quốc",
-      province: "Kiên Giang",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.6,
-      reviewCount: 278,
-      category: "island",
-    },
-  ]
+  const {
+    placeTrending: trendingPlaces, 
+    isLoading: isTrendingLoading, 
+    error: trendingError, 
+    fetchPlaceTrending
+  } = usePlace()
 
-  // Mock trending posts
-  const trendingPosts = [
-    {
-      id: 1,
-      title: "Khám phá vẻ đẹp hoang sơ của Vịnh Hạ Long",
-      content: "Trải nghiệm tuyệt vời với những hòn đảo đá vôi và hang động kỳ thú...",
-      likes: 245,
-      createdAt: "2025-03-15",
-      updatedAt: "2025-03-15",
-      status: true,
-      author: {
-        id: 1,
-        name: "Nguyễn Văn A",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 1,
-        name: "Vịnh Hạ Long",
-        address: "Quảng Ninh, Việt Nam",
-        averageStar: 4.8,
-      },
-      category: {
-        name: "Biển",
-        slug: "beach",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-    {
-      id: 2,
-      title: "Sapa - Thiên đường mây trắng",
-      content: "Những trải nghiệm không thể quên với ruộng bậc thang và văn hóa dân tộc...",
-      likes: 189,
-      createdAt: "2025-03-10",
-      updatedAt: "2025-03-10",
-      status: true,
-      author: {
-        id: 2,
-        name: "Trần Thị B",
-        avatarPath: "/placeholder.svg?height=40&width=40",
-      },
-      place: {
-        id: 2,
-        name: "Sapa",
-        address: "Lào Cai, Việt Nam",
-        averageStar: 4.6,
-      },
-      category: {
-        name: "Núi",
-        slug: "mountain",
-      },
-      images: ["/placeholder.svg?height=300&width=500"],
-    },
-  ]
+  const {
+    placeRecent: recentPlaces, 
+    isLoading: isRecentLoading, 
+    error: recentError, 
+    fetchPlaceRecent
+  } = usePlace()
 
-  // Mock recent places
-  const recentPlaces = [
-    {
-      id: 5,
-      name: "Đảo Lý Sơn",
-      province: "Quảng Ngãi",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.5,
-      reviewCount: 120,
-      category: "island",
-    },
-    {
-      id: 6,
-      name: "Thác Bản Giốc",
-      province: "Cao Bằng",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.7,
-      reviewCount: 95,
-      category: "mountain",
-    },
-    {
-      id: 7,
-      name: "Phong Nha - Kẻ Bàng",
-      province: "Quảng Bình",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.9,
-      reviewCount: 210,
-      category: "mountain",
-    },
-    {
-      id: 8,
-      name: "Cần Thơ",
-      province: "Cần Thơ",
-      image: "/placeholder.svg?height=300&width=400",
-      rating: 4.4,
-      reviewCount: 150,
-      category: "countryside",
-    },
-  ]
+  const {
+   placeTopRated: topRatedPlaces,
+   isLoading: isTopRatedLoading,
+   error: topRatedError,
+   fetchPlaceTopRated
+  } = usePlace()
+  
+  const {
+    placePopular: popularPlaces,
+    isLoading: isPopularLoading,
+    error: popularError,
+    fetchPlacePopular
+  } = usePlace()
+  // Fetch trending, recent, and top-rated places
+  useEffect(() => {
+    fetchPlaceTrending()
+  }, [])
 
-  const getCategoryGradient = (category: string) => {
-    const gradients: Record<string, string> = {
-      beach: "from-blue-500 to-blue-700",
-      mountain: "from-green-500 to-green-700",
-      city: "from-purple-500 to-purple-700",
-      island: "from-yellow-500 to-yellow-700",
-      countryside: "from-amber-700 to-amber-900",
-    }
-    return gradients[category] || "from-primary to-primary-dark"
-  }
+  useEffect(() => {
+    fetchPlaceRecent()
+  }, [])
+  useEffect(() => {
+    fetchPlaceTopRated()
+  }, [])
+  useEffect(() => {
+    fetchPlacePopular()
+  }, [])
+  // ✅ Combine loading states
+  const isLoading = isTrendingLoading || isRecentLoading || isTopRatedLoading || isPopularLoading
+  const hasError = trendingError || recentError || topRatedError || popularError
+  
+  
+  
+    
+    
 
+  
+const gradientColors = [
+  "from-blue-500 to-blue-700",
+  "from-green-500 to-green-700", 
+  "from-purple-500 to-purple-700",
+  "from-red-500 to-red-700",
+  "from-yellow-500 to-yellow-700",
+  "from-pink-500 to-pink-700",
+  "from-indigo-500 to-indigo-700",
+  "from-orange-500 to-orange-700",
+  "from-teal-500 to-teal-700",
+  "from-cyan-500 to-cyan-700"
+]
+const getRandomColorByIndex = (index: number) => {
+  return gradientColors[index % gradientColors.length]
+   
+}
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl p-8 mb-8">
@@ -201,7 +141,7 @@ export default function ExplorePage() {
             <div>
               <h2 className="text-2xl font-bold mb-6">Địa điểm nổi bật</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {trendingPlaces.map((place) => (
+                {trendingPlaces.map((place: PlaceExplore) => (
                   <Link key={place.id} href={`/places/${place.id}`} className="block group">
                     <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
                       <div className="relative h-40">
@@ -220,7 +160,7 @@ export default function ExplorePage() {
                         <div className="absolute bottom-3 left-3 right-3">
                           <h3 className="text-lg font-bold text-white">{place.name}</h3>
                           <div className="flex items-center justify-between">
-                            <span className="text-white/80 text-sm">{place.province}</span>
+                            <span className="text-white/80 text-sm">{place.address}</span>
                             <StarRating rating={place.rating} size="sm" />
                           </div>
                         </div>
@@ -239,7 +179,7 @@ export default function ExplorePage() {
             <div>
               <h2 className="text-2xl font-bold mb-6">Bài viết nổi bật</h2>
               <div className="space-y-4">
-                {trendingPosts.map((post) => (
+                {featuredPosts.map((post) => (
                   <PostCard key={post.id} post={post} layout="horizontal" />
                 ))}
               </div>
@@ -254,7 +194,7 @@ export default function ExplorePage() {
 
         <TabsContent value="recent">
               <h2 className="text-2xl font-bold mb-6">Địa điểm mới</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {recentPlaces.map((place) => (
                   <Link key={place.id} href={`/places/${place.id}`} className="block group">
                     <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
@@ -274,7 +214,7 @@ export default function ExplorePage() {
                         <div className="absolute bottom-3 left-3 right-3">
                           <h3 className="text-lg font-bold text-white">{place.name}</h3>
                           <div className="flex items-center justify-between">
-                            <span className="text-white/80 text-sm">{place.province}</span>
+                            <span className="text-white/80 text-sm">{place.address}</span>
                             <StarRating rating={place.rating} size="sm" />
                           </div>
                         </div>
@@ -287,10 +227,7 @@ export default function ExplorePage() {
 
         <TabsContent value="top-rated">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...trendingPlaces, ...recentPlaces]
-              .sort((a, b) => b.rating - a.rating)
-              .slice(0, 6)
-              .map((place) => (
+            {topRatedPlaces.map((place: PlaceExplore) => (
                 <Link key={place.id} href={`/places/${place.id}`} className="block group">
                   <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
                     <div className="relative h-48">
@@ -310,7 +247,7 @@ export default function ExplorePage() {
                       <div className="absolute bottom-3 left-3 right-3">
                         <h3 className="text-lg font-bold text-white">{place.name}</h3>
                         <div className="flex items-center justify-between">
-                          <span className="text-white/80 text-sm">{place.province}</span>
+                          <span className="text-white/80 text-sm">{place.address}</span>
                           <div className="flex items-center">
                             <StarRating rating={place.rating} size="sm" />
                             <span className="text-white/80 text-xs ml-1">({place.reviewCount})</span>
@@ -322,10 +259,10 @@ export default function ExplorePage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center text-muted-foreground text-sm">
                           <MapPin className="h-3 w-3 mr-1" />
-                          <span>{place.province}</span>
+                          <span>{place.address}</span>
                         </div>
                         <div className="bg-gradient-to-r text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 font-medium">
-                          <span>{place.rating}</span>
+                          <span className="text-black">{place.rating}</span>
                           <span className="text-yellow-300">★</span>
                         </div>
                       </div>
@@ -338,10 +275,7 @@ export default function ExplorePage() {
 
         <TabsContent value="popular">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...trendingPlaces, ...recentPlaces]
-              .sort((a, b) => b.reviewCount - a.reviewCount)
-              .slice(0, 6)
-              .map((place) => (
+            {popularPlaces.map((place) => (
                 <Link key={place.id} href={`/places/${place.id}`} className="block group">
                   <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
                     <div className="relative h-48">
@@ -361,7 +295,7 @@ export default function ExplorePage() {
                       <div className="absolute bottom-3 left-3 right-3">
                         <h3 className="text-lg font-bold text-white">{place.name}</h3>
                         <div className="flex items-center justify-between">
-                          <span className="text-white/80 text-sm">{place.province}</span>
+                          <span className="text-white/80 text-sm">{place.address}</span>
                           <div className="flex items-center">
                             <StarRating rating={place.rating} size="sm" />
                             <span className="text-white/80 text-xs ml-1">({place.reviewCount})</span>
@@ -373,7 +307,7 @@ export default function ExplorePage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center text-muted-foreground text-sm">
                           <MapPin className="h-3 w-3 mr-1" />
-                          <span>{place.province}</span>
+                          <span>{place.address}</span>
                         </div>
                         <div className="flex items-center text-muted-foreground text-sm">
                           <Users className="h-3 w-3 mr-1" />
@@ -392,88 +326,21 @@ export default function ExplorePage() {
       <section className="mb-12">
         <h2 className="text-2xl font-bold mb-6">Điểm đến nổi bật</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {["beach", "mountain", "city"].map((category, index) => (
+          {categories.map((category, index) => (
             <Card key={index} className="overflow-hidden">
-              <div className={`bg-gradient-to-r ${getCategoryGradient(category)} text-white p-6`}>
+              <div className={`bg-gradient-to-r ${getRandomColorByIndex(index)} text-white p-6`}>
                 <h3 className="text-xl font-bold mb-2">
-                  {category === "beach" ? "Biển đảo" : category === "mountain" ? "Núi rừng" : "Thành phố"}
+                  {category.name}
                 </h3>
                 <p className="mb-4 text-white/90">
-                  {category === "beach"
-                    ? "Khám phá những bãi biển tuyệt đẹp với cát trắng, nước xanh và nhiều hoạt động thú vị."
-                    : category === "mountain"
-                      ? "Chinh phục những đỉnh núi hùng vĩ, khám phá hang động và trải nghiệm không khí trong lành."
-                      : "Khám phá nhịp sống sôi động, văn hóa đa dạng và ẩm thực phong phú tại các thành phố."}
+                  {category.description}
                 </p>
                 <Button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm" asChild>
-                  <Link href={`/categories/${category}`}>Khám phá</Link>
+                  <Link href={`/categories/${category.id}`}>Khám phá</Link>
                 </Button>
               </div>
             </Card>
           ))}
-        </div>
-      </section>
-
-      {/* Travel Inspiration */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6">Cảm hứng du lịch</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="overflow-hidden">
-            <div className="relative h-48">
-              <Image src="/placeholder.svg?height=300&width=400" alt="Du lịch gia đình" fill className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-3 left-3">
-                <h3 className="text-lg font-bold text-white">Du lịch gia đình</h3>
-              </div>
-            </div>
-            <CardContent className="p-4">
-              <p className="text-muted-foreground">
-                Những điểm đến lý tưởng cho chuyến đi cùng gia đình với nhiều hoạt động phù hợp cho mọi lứa tuổi.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="overflow-hidden">
-            <div className="relative h-48">
-              <Image src="/placeholder.svg?height=300&width=400" alt="Du lịch mạo hiểm" fill className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-3 left-3">
-                <h3 className="text-lg font-bold text-white">Du lịch mạo hiểm</h3>
-              </div>
-            </div>
-            <CardContent className="p-4">
-              <p className="text-muted-foreground">
-                Những trải nghiệm đầy thử thách và cảm giác mạnh cho những người yêu thích sự phiêu lưu.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="overflow-hidden">
-            <div className="relative h-48">
-              <Image src="/placeholder.svg?height=300&width=400" alt="Du lịch văn hóa" fill className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-3 left-3">
-                <h3 className="text-lg font-bold text-white">Du lịch văn hóa</h3>
-              </div>
-            </div>
-            <CardContent className="p-4">
-              <p className="text-muted-foreground">
-                Khám phá nét văn hóa độc đáo, di sản lịch sử và phong tục tập quán của các vùng miền.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="overflow-hidden">
-            <div className="relative h-48">
-              <Image src="/placeholder.svg?height=300&width=400" alt="Du lịch ẩm thực" fill className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-              <div className="absolute bottom-3 left-3">
-                <h3 className="text-lg font-bold text-white">Du lịch ẩm thực</h3>
-              </div>
-            </div>
-            <CardContent className="p-4">
-              <p className="text-muted-foreground">
-                Trải nghiệm những món ăn đặc sản, hương vị độc đáo và văn hóa ẩm thực đa dạng của từng vùng miền.
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </section>
     </div>

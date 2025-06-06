@@ -29,8 +29,18 @@ const getAllCategoryWithDetails = async () => {
         throw error;
     }
 }
+const getTopCategories = async () => {
+    try {
+        const response = await api.get(CATEGORY.GET_TOP_CATEGORY);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching top categories:", error);
+        throw error;
+    }
+}
 export const categoryService = {
     getAllCategories,
     getAllPostsByCategory,
-    getAllCategoryWithDetails
+    getAllCategoryWithDetails,
+    getTopCategories
 };

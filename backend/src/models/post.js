@@ -5,7 +5,7 @@ const Post = sequelize.define(
   {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     user_id: { type: Sequelize.INTEGER, allowNull: false },
-    place_id: { type: Sequelize.STRING },
+    place_id: { type: Sequelize.INTEGER },
     stars: { type: Sequelize.INTEGER },
     category_id: { type: Sequelize.INTEGER },
     title: { type: Sequelize.STRING, allowNull: false },
@@ -22,4 +22,11 @@ const Post = sequelize.define(
     timestamps: false,
   },
 );
+Post.sync({ alter: true })
+  .then(() => {
+    console.log('Post table synced successfully');
+  })
+  .catch((error) => {
+    console.error('Error syncing Post table:', error);
+  });
 module.exports = Post;

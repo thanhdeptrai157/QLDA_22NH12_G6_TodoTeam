@@ -38,8 +38,50 @@ const getNeighboringPlaces = async (req, res) => {
     res.status(500).send({ message: 'Internal server error' });
   }
 }
+const getTrendingPlaces = async (req, res) => {
+  try {
+    const places = await placeService.getTrendingPlaces();
+    res.status(200).send({ message: 'Success', data: places });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+};
+const getRecentPlaces = async (req, res) => {
+  try {
+    const places = await placeService.getRecentPlaces();
+    res.status(200).send({ message: 'Success', data: places });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+};
+const getTopRatedPlaces = async (req, res) => {
+  try {
+    const places = await placeService.getTopRatedPlaces();
+    res.status(200).send({ message: 'Success', data: places });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+};
+const getPopularPlaces = async (req, res) => {
+  try {
+    const places = await placeService.getPopularPlaces();
+    res.status(200).send({ message: 'Success', data: places });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getPlaces,
   getPlaceById,
   getNeighboringPlaces,
+  getTrendingPlaces,
+  getRecentPlaces,
+  getTopRatedPlaces,
+  getPopularPlaces
+
 };

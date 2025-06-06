@@ -11,3 +11,11 @@ export interface Place {
     posts: Post[];
     images?: string[]; // Thêm trường images để nhận nhiều ảnh từ backend
 }
+export interface PlaceExplore {
+    id: number;
+    name: string;
+    address: string;
+    rating: number;
+    reviewCount?: number;
+    image: string;
+}
