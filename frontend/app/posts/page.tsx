@@ -11,7 +11,7 @@ import { PostCard } from "@/components/post-card";
 import { SearchBar } from "@/components/search-bar";
 import { usePostsPagination } from "@/hooks/use-posts-pagination";
 import { useTopCategories } from "@/hooks/use-category";
-import { ChevronLeft, ChevronRight, Search, Filter, Grid, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Filter, Grid, List, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function PostsPage() {
@@ -163,7 +163,72 @@ export default function PostsPage() {
 
     return buttons;
   };
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        {/* Search Bar Skeleton */}
+        <div className="mb-8">
+          <div className="h-16 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-2xl animate-pulse shadow-lg"></div>
+        </div>
 
+        {/* Loading Animation với Icon */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full mb-6 shadow-lg">
+            <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            Đang tìm kiếm...
+          </h3>
+          <p className="text-gray-500">
+            Vui lòng chờ trong giây lát
+          </p>
+          
+          {/* Progress dots */}
+          <div className="flex justify-center space-x-2 mt-4">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+        </div>
+
+        {/* Posts Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+              {/* Image skeleton */}
+              <div className="h-48 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse"></div>
+              
+              {/* Content skeleton */}
+              <div className="p-4 space-y-3">
+                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-3/4 animate-pulse"></div>
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded w-1/2 animate-pulse"></div>
+                
+                {/* Tags skeleton */}
+                <div className="flex gap-2 pt-2">
+                  <div className="h-6 w-16 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-full animate-pulse"></div>
+                  <div className="h-6 w-20 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-full animate-pulse"></div>
+                </div>
+                
+                {/* Stats skeleton */}
+                <div className="flex justify-between pt-2">
+                  <div className="h-4 w-12 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-pulse"></div>
+                  <div className="h-4 w-16 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Floating particles effect */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping opacity-75"></div>
+          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-400 rounded-full animate-bounce opacity-50"></div>
+          <div className="absolute bottom-1/3 left-1/3 w-1.5 h-1.5 bg-pink-400 rounded-full animate-pulse opacity-60"></div>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="container mx-auto py-8 px-4">
       {/* Header */}
