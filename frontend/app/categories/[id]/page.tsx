@@ -128,11 +128,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
               ))}
             </div>
 
-            <div className="mt-8">
-              <h2 className="text-xl font-bold mb-4">Tìm kiếm</h2>
-              <SearchBar />
-            </div>
-
             <div className="mt-8 p-4 bg-primary/10 rounded-lg">
               <h3 className="font-bold mb-2">Chia sẻ trải nghiệm của bạn</h3>
               <p className="text-sm text-muted-foreground mb-4">

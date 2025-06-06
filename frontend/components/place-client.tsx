@@ -587,6 +587,7 @@ export const PlaceClient = ({ id }: { id: number }) => {
                                                 <p className="font-medium">{weatherMainToVietnamese[weather?.weather[0]?.main!]}</p>
                                             </div>
                                         </div>
+                                        <div className="text-sm text-muted-foreground mt-5">Cập nhật lúc: {new Date(weather?.dt! * 1000).toLocaleString("vi-VN")}</div>
                                     </div>
                                 )}
                             </CardContent>

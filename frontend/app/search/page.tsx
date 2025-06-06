@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { SearchBar } from "@/components/search-bar"
 import { PostCard } from "@/components/post-card"
 import { Post } from "@/types/post"
+import { API_URL } from "@/configs/env"
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
@@ -31,14 +32,14 @@ export default function SearchPage() {
 
         if (isLocationEmpty && isCategoryAll && isStarsAll) {
           // Lấy tất cả bài viết
-          url = `http://localhost:8000/posts`
+          url = `${API_URL}/posts`
         } else {
           // Advanced search cho mọi trường hợp còn lại
           const params = new URLSearchParams()
           if (!isLocationEmpty) params.set("locationName", locationName.trim())
           if (!isCategoryAll) params.set("category_id", category_id)
           if (!isStarsAll) params.set("stars", stars)
-          url = `http://localhost:8000/search/advanced?${params.toString()}`
+          url = `${API_URL}/search/advanced?${params.toString()}`
         }
         res = await fetch(url)
         if (!res.ok) throw new Error("Lỗi khi tìm kiếm bài viết")
@@ -69,5 +70,13 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Đang tải...</div>}>
+      <SearchPageContent />
+    </Suspense>
   )
 }
