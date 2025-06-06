@@ -1,7 +1,4 @@
 import api from "@/configs/axios";
-import Cookies from "js-cookie";
-
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/types/status";
 import { AUTH } from "@/constants/api-endpoint";
 
 
@@ -46,8 +43,26 @@ const changePassword = async (id: number, oldPassword: string, newPassword: stri
         throw error;
     }
 }
+
+const updateProfile = async (data: UserProfilePayload) => {
+    try {
+        const response = await api.put(AUTH.CHANGE_PROFILE(data.id), {
+            name: data.name,
+            phone: data.phone,
+            bio: data.bio,
+            address: data.address,
+            avatar_path: data.avatar_path,
+            cover_path: data.cover_path,
+        });
+        return response;
+    } catch (error) {
+        console.error("Update profile failed", error);
+        throw error;
+    }
+}
 export const authService = {
     login,
     register,
     changePassword,
+    updateProfile,
 };

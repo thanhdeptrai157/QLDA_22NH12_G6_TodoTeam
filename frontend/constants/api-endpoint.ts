@@ -6,6 +6,9 @@ export const AUTH = {
     REGISTER: "/auth/register/",
     CHANGE_PASSWORD(id: number) {
         return `/auth/${id}/change-password/`;
+    },
+    CHANGE_PROFILE(id: number) {
+        return `/auth/${id}/change-profile/`;
     }
 }
 

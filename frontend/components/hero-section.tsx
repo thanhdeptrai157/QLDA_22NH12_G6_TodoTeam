@@ -113,7 +113,7 @@ export function HeroSection() {
                   Khám phá ngay
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20" asChild>
+              <Button size="lg" variant="outline" className="border-black text-card-foreground bg-card" asChild>
                 <Link href="/posts/create">
                   <Camera className="mr-2 h-5 w-5" />
                   Chia sẻ trải nghiệm

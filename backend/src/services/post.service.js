@@ -4,7 +4,7 @@ const { Op, literal } = require('sequelize');
 const getAllPosts = async () => {
     return await Post.findAll({
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
             {
@@ -51,7 +51,7 @@ const getPostsByCategory = async (category_id) => {
     const posts = await Post.findAll({
         where: { category_id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             {
@@ -73,7 +73,7 @@ const getPostById = async (id) => {
     const post = await Post.findOne({
         where: { id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
             {
@@ -97,7 +97,7 @@ const getPostByIdPlace = async (place_id) => {
     const post = await Post.findOne({
         where: { place_id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             {
@@ -121,7 +121,7 @@ const getPostByIdUser = async (user_id) => {
     const post = await Post.findAll({
         where: { user_id },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             {
@@ -190,7 +190,7 @@ const getTopPostsByLikes = async (limit = 5) => {
             ]
         },
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             {
@@ -212,7 +212,7 @@ const getTopPostsByLikes = async (limit = 5) => {
 const getNewestPosts = async (limit = 5) => {
     return await Post.findAll({
         include: [
-            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
             {

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -54,46 +54,48 @@ export function SearchBar() {
   const isShowAll = !locationName.trim() && selectedCategoryId === "all" && selectedStars === "all"
 
   return (
-    <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
-      <div className="relative flex-grow">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="text"
-          placeholder="Tìm địa điểm..."
-          className="pl-9"
-          value={locationName}
-          onChange={(e) => setLocationName(e.target.value)}
-        />
-      </div>
-      <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId} disabled={isLoadingCategories}>
-        <SelectTrigger className="w-full sm:w-[150px]">
-          <SelectValue placeholder="Danh mục" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tất cả danh mục</SelectItem>
-          {categories.map((cat) => (
-            <SelectItem key={cat.id} value={String(cat.id)}>
-              {cat.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Select value={selectedStars} onValueChange={setSelectedStars}>
-        <SelectTrigger className="w-full sm:w-[120px]">
-          <SelectValue placeholder="Số sao" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tất cả sao</SelectItem>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <SelectItem key={star} value={String(star)}>
-              {star} sao
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Button type="submit">
-        {isShowAll ? "Hiển thị tất cả" : "Tìm kiếm"}
-      </Button>
-    </form>
+    <Suspense fallback={<div>Đang tải thanh tìm kiếm...</div>}>
+      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-grow">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Tìm địa điểm..."
+            className="pl-9"
+            value={locationName}
+            onChange={(e) => setLocationName(e.target.value)}
+          />
+        </div>
+        <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId} disabled={isLoadingCategories}>
+          <SelectTrigger className="w-full sm:w-[150px]">
+            <SelectValue placeholder="Danh mục" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả danh mục</SelectItem>
+            {categories.map((cat) => (
+              <SelectItem key={cat.id} value={String(cat.id)}>
+                {cat.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={selectedStars} onValueChange={setSelectedStars}>
+          <SelectTrigger className="w-full sm:w-[120px]">
+            <SelectValue placeholder="Số sao" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả sao</SelectItem>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <SelectItem key={star} value={String(star)}>
+                {star} sao
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button type="submit">
+          {isShowAll ? "Hiển thị tất cả" : "Tìm kiếm"}
+        </Button>
+      </form>
+    </Suspense>
   )
 }

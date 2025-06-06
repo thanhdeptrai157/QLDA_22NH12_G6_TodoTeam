@@ -4,16 +4,12 @@ import { authService } from "@/service/auth-service";
 import { useAuthStore } from "@/store/user";
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/types/status";
 import Cookies from "js-cookie";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function useAuth() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const callbackUrl = searchParams?.get("callbackUrl") || "/";
 
     const setUser = useAuthStore((state) => state.setUser);
     const logout = useAuthStore((state) => state.logout);

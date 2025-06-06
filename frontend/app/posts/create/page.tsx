@@ -25,7 +25,6 @@ import { supabase } from "@/configs/supabase"
 
 export default function CreatePostPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [rating, setRating] = useState(0)
@@ -234,7 +233,7 @@ export default function CreatePostPage() {
         <CardContent className="p-6">
           <div className="flex items-center gap-3 mb-6">
             <Avatar>
-              <AvatarImage src={user?.avatarPath} alt={user?.name} />
+              <AvatarImage src={user?.avatar_path} alt={user?.name} />
               <AvatarFallback>{user?.name.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
@@ -453,7 +452,7 @@ export default function CreatePostPage() {
                   },  
                   author: {
                     name: user?.name ?? "Tên người dùng",
-                    avatarPath: user?.avatarPath ?? "/placeholder.svg?height=40&width=40",
+                    avatar_path: user?.avatar_path ?? "/placeholder.svg?height=40&width=40",
                   },
                   images: selectedImages,
                   createdAt: new Date().toISOString(),

@@ -19,7 +19,7 @@ interface PostPreviewProps {
     }
     author: {
       name: string
-      avatarPath: string
+      avatar_path: string
     }
     images?: string[]
     createdAt: string
@@ -45,7 +45,7 @@ export function PostPreview({ post }: PostPreviewProps) {
       <div className="p-4">
         <div className="flex items-center gap-3 mb-4">
           <Avatar>
-            <AvatarImage src={post.author.avatarPath} alt={post.author.name} />
+            <AvatarImage src={post.author.avatar_path} alt={post.author.name} />
             <AvatarFallback>{post.author.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
