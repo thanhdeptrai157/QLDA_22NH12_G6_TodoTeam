@@ -11,7 +11,7 @@ router.get('/', postController.getAllPosts);
 router.post('/', postController.createPost);
 // lấy theo mới nhất
 router.get('/top/newest', postController.getNewestPosts);
-
+router.get('/paginated', postController.getAllPostsWithPagination);
 // Xem những bài viết bị bài viết bị báo cáo chỉ có admin có quyền
 router.get('/inactive_post', authenticateToken, authorizeRole.authorizeRole('admin'), postController.getInactivePosts);
 // Báo cáo hoặc bỏ báo cáo một bài viết người dùng và admin có thể báo cáo

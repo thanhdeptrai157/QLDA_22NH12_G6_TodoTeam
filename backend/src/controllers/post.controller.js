@@ -128,7 +128,32 @@ const getByCategory = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 };
+const getAllPostsWithPagination = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 9;
+    const filters = {
+      category_id: req.query.category_id,
+      search: req.query.search,
+      sort_by: req.query.sort_by || 'created_at',
+      sort_order: req.query.sort_order || 'DESC'
+    };
 
+    const result = await postService.getAllPostsWithPagination(page, limit, filters);
+    
+    res.status(200).json({
+      success: true,
+      data: result.posts,
+      pagination: result.pagination
+    });
+  } catch (error) {
+    console.error('Error fetching posts with pagination:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
 module.exports = {
     getAllPosts,
     createPost,
@@ -142,5 +167,6 @@ module.exports = {
     togglePostActive,
     getInactivePosts,
     deletePost,
-    getByCategory
+    getByCategory,
+    getAllPostsWithPagination
 };

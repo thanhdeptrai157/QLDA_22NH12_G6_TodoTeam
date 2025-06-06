@@ -51,7 +51,8 @@ export const POST = {
     },
     GET_POST_BY_CATEGORY(category_id: number) {
         return `/posts/category/${category_id}`;
-    }
+    },
+    GET_PAGINATED_POSTS: "/posts/paginated",
 }
 
 export const CATEGORY = {

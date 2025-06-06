@@ -1,4 +1,5 @@
 const { Post, User, Category, Place, Like } = require('../models');
+const { Op, literal } = require('sequelize');
 
 const getAllPosts = async () => {
     return await Post.findAll({
@@ -6,7 +7,8 @@ const getAllPosts = async () => {
             { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -17,11 +19,11 @@ const getAllPosts = async () => {
 };
 
 const createPost = async (postData) => {
-    const { user_id, title, content, category_id, images, place_name , place_address, lat, lng, stars } = postData;
+    const { user_id, title, content, category_id, images, place_name, place_address, lat, lng, stars } = postData;
     const place = await Place.findOne({ where: { name: place_name, address: place_address } });
     let place_id = null;
     if (!place) {
-        const newPlace = await Place.create({ name: place_name, address: place_address, average_stars: stars, longitude: lng, latitude:lat });
+        const newPlace = await Place.create({ name: place_name, address: place_address, average_stars: stars, longitude: lng, latitude: lat });
         place_id = newPlace.id;
     } else {
         place_id = place.id;
@@ -43,7 +45,7 @@ const createPost = async (postData) => {
         image: images,
         stars
     });
-  }
+}
 
 const getPostsByCategory = async (category_id) => {
     const posts = await Post.findAll({
@@ -52,7 +54,8 @@ const getPostsByCategory = async (category_id) => {
             { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -73,7 +76,8 @@ const getPostById = async (id) => {
             { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -96,7 +100,8 @@ const getPostByIdPlace = async (place_id) => {
             { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -104,7 +109,7 @@ const getPostByIdPlace = async (place_id) => {
             }
         ]
     });
-    
+
 
     if (!post) {
         throw new Error('Post not found');
@@ -119,7 +124,8 @@ const getPostByIdUser = async (user_id) => {
             { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -139,8 +145,8 @@ const updatePost = async (id, postData) => {
     if (!post) {
         throw new Error('Post not found');
     }
-    const { user_id, title, content, category_id, place_id, name ,image, address, stars } = postData;
-    const place = await Place.findOne({ where: { id : place_id} });
+    const { user_id, title, content, category_id, place_id, name, image, address, stars } = postData;
+    const place = await Place.findOne({ where: { id: place_id } });
     const oldPlaceId = post.place_id;
     post.user_id = user_id;
     post.title = title;
@@ -151,7 +157,7 @@ const updatePost = async (id, postData) => {
     post.stars = stars;
     await post.save();
     if (!place) {
-        await Place.create({id: place_id, name: name, address: address, average_stars: stars });
+        await Place.create({ id: place_id, name: name, address: address, average_stars: stars });
         const posts = await Post.findAll({
             attributes: ['stars'],
             where: { place_id: oldPlaceId }
@@ -187,7 +193,8 @@ const getTopPostsByLikes = async (limit = 5) => {
             { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -202,13 +209,14 @@ const getTopPostsByLikes = async (limit = 5) => {
     });
 };
 
-const getNewestPosts = async (limit = 5) =>{
+const getNewestPosts = async (limit = 5) => {
     return await Post.findAll({
         include: [
             { model: User, attributes: ['id', 'name', 'email', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -222,33 +230,33 @@ const getNewestPosts = async (limit = 5) =>{
 }
 
 const getInactivePosts = async () => {
-  return await Post.findAll({
-    where: {
-      is_active: false
-    }
-  });
+    return await Post.findAll({
+        where: {
+            is_active: false
+        }
+    });
 };
 
 const togglePostActiveStatus = async (id) => {
-  const post = await Post.findByPk(id);
-  if (!post) {
-    throw new Error('Post not found');
-  }
+    const post = await Post.findByPk(id);
+    if (!post) {
+        throw new Error('Post not found');
+    }
 
-  // Đảo giá trị is_active
-  post.is_active = !post.is_active;
-  await post.save();
+    // Đảo giá trị is_active
+    post.is_active = !post.is_active;
+    await post.save();
 
-  return post;
+    return post;
 };
 
 const deletePostById = async (id) => {
-  const deletedCount = await Post.destroy({
-    where: { id: id }
-  });
+    const deletedCount = await Post.destroy({
+        where: { id: id }
+    });
 
-  // Trả về true nếu xóa thành công
-  return deletedCount > 0;
+    // Trả về true nếu xóa thành công
+    return deletedCount > 0;
 };
 
 const getPostByCategory = async (category_id) => {
@@ -258,7 +266,8 @@ const getPostByCategory = async (category_id) => {
             { model: User, attributes: ['id', 'name', 'avatar_path'] },
             { model: Category, attributes: ['id', 'name'] },
             { model: Place, attributes: ['id', 'name', 'address', 'average_stars'] },
-            { model: Like, as: 'like', attributes: ['user_id'],
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
                 where: {
                     is_post: true
                 },
@@ -274,20 +283,110 @@ const getPostByCategory = async (category_id) => {
 
     return posts;
 };
+const getAllPostsWithPagination = async (page = 1, limit = 9, filters = {}) => {
+    const offset = (page - 1) * limit;
+    const { category_id, search, sort_by = 'created_at', sort_order = 'DESC' } = filters;
+
+    const whereClause = {
+        is_active: true
+    };
+
+    // Filter by category
+    if (category_id && category_id !== 'all') {
+        whereClause.category_id = parseInt(category_id);
+    }
+
+    // Search filter
+    if (search && search.trim()) {
+        whereClause[Op.or] = [
+            { title: { [Op.iLike]: `%${search.trim()}%` } },
+            { content: { [Op.iLike]: `%${search.trim()}%` } }
+        ];
+    }
+
+    // Sort options
+    let orderBy = [['created_at', 'DESC']]; // default
+    if (sort_by === 'likes') {
+        orderBy = [[literal('(SELECT COUNT(*) FROM "like" WHERE "like".target_id = post.id AND "like".is_post = true)'), sort_order]];
+    } else if (sort_by === 'stars') {
+        orderBy = [['stars', sort_order]];
+    } else if (sort_by === 'title') {
+        orderBy = [['title', sort_order]];
+    }
+
+    // ✅ Tách count và findAll riêng biệt
+    
+    // Count total posts (without includes to avoid conflicts)
+    const totalCount = await Post.count({
+        where: whereClause,
+        distinct: true
+    });
+
+    // Get posts with all includes
+    const posts = await Post.findAll({
+        attributes: {
+            include: [
+                [literal('(SELECT COUNT(*) FROM "like" WHERE "like".target_id = post.id AND "like".is_post = true)'), 'likes'],
+                [literal('(SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id)'), 'commentCount']
+            ]
+        },
+        include: [
+            {
+                model: User,
+                attributes: ['id', 'name', 'avatar_path'],
+                as: 'user'
+            },
+            {
+                model: Category,
+                attributes: ['id', 'name']
+            },
+            {
+                model: Place,
+                attributes: ['id', 'name', 'address', 'average_stars']
+            },
+            {
+                model: Like, as: 'like', attributes: ['user_id'],
+                where: {
+                    is_post: true
+                },
+                required: false
+            }
+        ],
+        where: whereClause,
+        order: orderBy,
+        limit: parseInt(limit),
+        offset: parseInt(offset)
+    });
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return {
+        posts: posts,
+        pagination: {
+            currentPage: parseInt(page),
+            totalPages,
+            totalItems: totalCount,
+            itemsPerPage: parseInt(limit),
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        }
+    };
+};
 module.exports = {
-  getAllPosts,
-  createPost,
-  getPostById,
-  getPostByIdPlace,
-  getPostByIdUser,
-  getPostsByCategory,
-  updatePost,
-  getTopPostsByLikes,
-  getNewestPosts,
-  getInactivePosts,
-  togglePostActiveStatus,
-  deletePostById,
-  getPostByCategory
+    getAllPosts,
+    createPost,
+    getPostById,
+    getPostByIdPlace,
+    getPostByIdUser,
+    getPostsByCategory,
+    updatePost,
+    getTopPostsByLikes,
+    getNewestPosts,
+    getInactivePosts,
+    togglePostActiveStatus,
+    deletePostById,
+    getPostByCategory,
+    getAllPostsWithPagination
 };
 
 
