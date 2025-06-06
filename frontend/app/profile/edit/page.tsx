@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/components/ui/use-toast"
 import { Camera } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useAuthStore } from "@/store/user"
+import { add } from "date-fns"
+import { authService } from "@/service/auth-service"
+import { useGoong } from "@/hooks/use-goong"
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -21,21 +25,26 @@ export default function EditProfilePage() {
   const [isLoading, setIsLoading] = useState(false)
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const coverInputRef = useRef<HTMLInputElement>(null)
-
+  const {user} = useAuthStore()
   // Mock user data
   const [formData, setFormData] = useState({
-    name: "Nguyễn Văn A",
-    username: "nguyenvana",
-    bio: "Yêu du lịch | Nhiếp ảnh gia | Foodie | Đã đến 20+ tỉnh thành Việt Nam",
-    email: "nguyenvana@example.com",
-    phone: "0123456789",
-    location: "Hà Nội, Việt Nam",
-    avatarPath: "/placeholder.svg?height=200&width=200",
-    coverPath: "/placeholder.svg?height=400&width=1200",
+    name: user?.name!,
+    bio: user?.bio!,
+    email: user?.email!,
+    phone: user?.phone!,
+    address: user?.address!,
+    avatar_path: user?.avatar_path!,
+    cover_path: user?.cover_path!,
     password: "",
     newPassword: "",
     confirmPassword: "",
   })
+  const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const { isLoading: isPlaceLoading, error: placeError, data: placeData, fetchPlaceSuggestion } = useGoong()
+  const [showAddressSearch, setShowAddressSearch] = useState(false)
+  const [addressSearchTerm, setAddressSearchTerm] = useState("")
+  const [addressResults, setAddressResults] = useState<any[]>([])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -53,20 +62,18 @@ export default function EditProfilePage() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // In a real app, you would upload the file to a server
-      // For now, we'll just create a local URL
       const imageUrl = URL.createObjectURL(file)
-      setFormData((prev) => ({ ...prev, avatarPath: imageUrl }))
+      setFormData((prev) => ({ ...prev, avatar_path: imageUrl }))
+      setAvatarFile(file)
     }
   }
 
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // In a real app, you would upload the file to a server
-      // For now, we'll just create a local URL
       const imageUrl = URL.createObjectURL(file)
-      setFormData((prev) => ({ ...prev, coverPath: imageUrl }))
+      setFormData((prev) => ({ ...prev, cover_path: imageUrl }))
+      setCoverFile(file)
     }
   }
 
@@ -75,9 +82,51 @@ export default function EditProfilePage() {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      let coverUrl = formData.cover_path
+      let avatarUrl = formData.avatar_path
+      if (coverFile) {
+        const filePath = `cover_${Date.now()}`
+        const uploadForm = new FormData()
+        uploadForm.append('file', coverFile)
+        uploadForm.append('filePath', filePath)
+        const res = await fetch('/api/supabase-upload', {
+          method: 'POST',
+          body: uploadForm,
+        })
+        if (!res.ok) throw new Error('Upload error')
+        const { publicUrl } = await res.json()
+        coverUrl = publicUrl
+      }
+      if (avatarFile) {
+        const filePath = `avatar_${Date.now()}`
+        const uploadForm = new FormData()
+        uploadForm.append('file', avatarFile)
+        uploadForm.append('filePath', filePath)
+        const res = await fetch('/api/supabase-upload', {
+          method: 'POST',
+          body: uploadForm,
+        })
+        if (!res.ok) throw new Error('Upload error')
+        const { publicUrl } = await res.json()
+        avatarUrl = publicUrl
+      }
 
+      const response = await authService.updateProfile({
+        id: Number.parseInt(user?.id!),
+        name: formData.name,
+        phone: formData.phone,
+        bio: formData.bio,
+        address: formData.address,
+        avatar_path: avatarUrl,
+        cover_path: coverUrl,
+      })
+      if (response.status == 200) {
+        console.log("Profile updated successfully")
+        const userData = response.data.user as User
+        useAuthStore.getState().setUser({
+          ...userData,
+        })
+      }
       toast({
         title: "Cập nhật thành công",
         description: "Thông tin cá nhân của bạn đã được cập nhật",
@@ -135,6 +184,37 @@ export default function EditProfilePage() {
     }
   }
 
+  // Gợi ý địa chỉ khi nhập
+  useEffect(() => {
+    if (!showAddressSearch) return
+    if (!addressSearchTerm.trim()) {
+      setAddressResults([])
+      return
+    }
+    const handler = setTimeout(() => {
+      fetchPlaceSuggestion(addressSearchTerm)
+    }, 500)
+    return () => clearTimeout(handler)
+  }, [addressSearchTerm, showAddressSearch])
+
+  useEffect(() => {
+    if (placeData?.predictions) {
+      setAddressResults(
+        placeData.predictions.map((item: any) => ({
+          id: item.place_id,
+          name: item.description,
+        }))
+      )
+    }
+  }, [placeData])
+
+  const handleSelectAddress = (item: any) => {
+    setFormData((prev) => ({ ...prev, address: item.name }))
+    setShowAddressSearch(false)
+    setAddressSearchTerm("")
+    setAddressResults([])
+  }
+
   return (
     <div className="container max-w-4xl mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-6">Chỉnh sửa trang cá nhân</h1>
@@ -157,7 +237,7 @@ export default function EditProfilePage() {
                 <div className="space-y-2">
                   <Label>Ảnh bìa</Label>
                   <div className="relative h-[200px] w-full rounded-md overflow-hidden border">
-                    <Image src={formData.coverPath || "/placeholder.svg"} alt="Cover" fill className="object-cover" />
+                    <Image src={formData.cover_path || "/placeholder.svg"} alt="Cover" fill className="object-cover" />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity">
                       <Button
                         type="button"
@@ -185,8 +265,8 @@ export default function EditProfilePage() {
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <Avatar className="h-24 w-24">
-                        <AvatarImage src={formData.avatarPath} alt={formData.name} />
-                        <AvatarFallback>{formData.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={formData.avatar_path} alt={formData.name} />
+                        <AvatarFallback>{formData.name?.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <Button
                         type="button"
@@ -221,10 +301,7 @@ export default function EditProfilePage() {
                     <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Tên người dùng</Label>
-                    <Input id="username" name="username" value={formData.username} onChange={handleChange} required />
-                  </div>
+                  
                 </div>
 
                 <div className="space-y-2">
@@ -242,6 +319,7 @@ export default function EditProfilePage() {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      disabled
                     />
                   </div>
 
@@ -252,8 +330,47 @@ export default function EditProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="location">Địa chỉ</Label>
-                  <Input id="location" name="location" value={formData.location} onChange={handleChange} />
+                  <Label htmlFor="address">Địa chỉ</Label>
+                  {showAddressSearch ? (
+                    <div className="bg-muted/50 p-2 rounded-lg">
+                      <Input
+                        placeholder="Tìm kiếm địa chỉ..."
+                        value={addressSearchTerm}
+                        onChange={e => setAddressSearchTerm(e.target.value)}
+                        className="mb-2"
+                        autoFocus
+                      />
+                      {isPlaceLoading && <div className="text-sm text-muted-foreground">Đang tìm kiếm...</div>}
+                      {placeError && <div className="text-sm text-destructive">{placeError}</div>}
+                      {addressResults.length > 0 && !isPlaceLoading && (
+                        <div className="bg-background border rounded-md max-h-60 overflow-y-auto">
+                          {addressResults.map((item) => (
+                            <div
+                              key={item.id}
+                              className="p-2 hover:bg-muted cursor-pointer"
+                              onClick={() => handleSelectAddress(item)}
+                            >
+                              {item.name}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        readOnly
+                        className="flex-grow"
+                      />
+                      <Button type="button" variant="outline" size="sm" onClick={() => setShowAddressSearch(true)}>
+                        Tìm kiếm
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
 

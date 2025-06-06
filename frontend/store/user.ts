@@ -1,13 +1,6 @@
 // store/auth-store.ts
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-
-interface User {
-    id: string;
-    name: string;
-    email: string;
-    avatarPath?: string;
-}
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AuthState {
     user: User | null;
@@ -24,6 +17,7 @@ export const useAuthStore = create<AuthState>()(
         }),
         {
             name: "auth-store",
+            storage: createJSONStorage(() => sessionStorage),
         }
     )
 );

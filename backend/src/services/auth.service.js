@@ -52,7 +52,18 @@ const updateProfile = async (userId, updateData) => {
 
   // Cập nhật thông tin
   await user.update(updateData);
-  return user;
+  const safeUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      avatar_path: user.avatar_path,
+      cover_path: user.cover_path,
+      role: user.role,
+      bio: user.bio,
+      address: user.address,
+    };
+  return safeUser;
 };
 
 const getInactiveUsers = async () => {

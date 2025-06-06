@@ -21,10 +21,8 @@ export default function ChatbotPage() {
   }
 
   useEffect(() => {
-    if (isLoaded) {
-      scrollToBottom()
-    }
-  }, [messages, isLoaded])
+    scrollToBottom()
+  }, [messages])
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -108,9 +106,9 @@ export default function ChatbotPage() {
         </div>
 
         {/* Chat Container */}
-        <div className="bg-card border rounded-lg h-[600px] flex flex-col">
+        <div className="bg-card border rounded-lg h-[600px] flex flex-col flex-1 min-h-0">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}

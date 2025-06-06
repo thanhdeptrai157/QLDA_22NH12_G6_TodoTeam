@@ -31,6 +31,7 @@ export function PostCard({ post, layout = "vertical" }: PostCardProps) {
     }
     return colors[id] || "bg-primary"
   }
+  console.log("PostCard post:", post)
   const categoryColor = getCategoryColor(post?.category_id!)
   const [likes, setLikes] = useState(post.likes);
   const [likedByUser, setLikedByUser] = useState(false);
@@ -97,7 +98,7 @@ export function PostCard({ post, layout = "vertical" }: PostCardProps) {
           <CardFooter className="p-4 pt-0 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Avatar className="h-6 w-6">
-                {/* <AvatarImage src={post.author.avatarPath} alt={post.user.name} /> */}
+                <AvatarImage src={post?.user?.avatar_path!} alt={post.user.name} />
                 <AvatarFallback>{post?.user?.name.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
               <span className="text-sm">{post?.user?.name}</span>
@@ -159,7 +160,7 @@ export function PostCard({ post, layout = "vertical" }: PostCardProps) {
       <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6">
-            {/* <AvatarImage src={post.author.avatarPath} alt={post.user.name} /> */}
+            <AvatarImage src={post?.user?.avatar_path!} alt={post.user.name} />
             <AvatarFallback>{post?.user?.name.charAt(0).toUpperCase()}</AvatarFallback>
 
           </Avatar>

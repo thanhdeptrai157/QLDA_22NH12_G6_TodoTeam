@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/user"
 import { likeService } from "@/service/like-service"
 import { MapPin, ThumbsUp, MessageSquare, Share2, Bookmark, ChevronLeft, Flag } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -170,7 +170,7 @@ export function PageClient({ post }: { post: any }) {
             <div className="p-6 border-b">
               <div className="flex items-center gap-3 mb-4">
                 <Avatar>
-                  {/* <AvatarImage src={post?.user?.avatarPath || "/placeholder.svg"} alt={post.author.name} /> */}
+                  <AvatarImage src={post?.user?.avatar_path || "/placeholder.svg"} alt={post?.user?.name} />
                   <AvatarFallback>{post?.user?.name.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>

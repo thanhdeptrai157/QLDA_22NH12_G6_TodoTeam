@@ -4,6 +4,7 @@ export interface Post {
     id: number;
     name: string;
     email: string;
+    avatar_path: string | null;
   },
   place_id: string | null;
   stars: number | null;
